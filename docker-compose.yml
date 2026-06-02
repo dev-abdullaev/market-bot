@@ -28,6 +28,8 @@ services:
       SECRET_KEY: ${SECRET_KEY:-dev-insecure-key-change-in-prod}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-*}
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      BOT_SHARED_SECRET: ${BOT_SHARED_SECRET:-changeme}
+      FRONTEND_WEBAPP_URL: ${FRONTEND_WEBAPP_URL:-https://example.com}
       DEBUG: ${DEBUG:-1}
     ports: ["8000:8000"]
     volumes:
@@ -36,6 +38,17 @@ services:
     # Override CMD for live-reload in dev; the image default is gunicorn.
     # Uncomment the next line for development:
     # command: python manage.py runserver 0.0.0.0:8000
+
+  bot:
+    build: ./bot
+    depends_on:
+      - backend
+    environment:
+      BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      BACKEND_API_URL: http://backend:8000/api
+      BOT_SHARED_SECRET: ${BOT_SHARED_SECRET:-changeme}
+      WEBAPP_URL: ${FRONTEND_WEBAPP_URL:-https://example.com}
+    restart: unless-stopped
 
 volumes:
   pgdata:
