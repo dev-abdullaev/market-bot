@@ -21,8 +21,7 @@ export function CategorySection({ category, currency, onAdd }) {
       <motion.div
         variants={gridContainer}
         initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.15 }}
+        animate="visible"
         className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 sm:gap-4"
       >
         {products.map((p) => (
