@@ -17,6 +17,7 @@ import {
   SEASONS,
   MAX_IMAGES,
   flattenCategories,
+  indexCategories,
 } from "../../lib/products";
 import { Button } from "../ui/Button";
 import { Input, Label, Select } from "../ui/Input";
@@ -181,7 +182,7 @@ export function ProductModal({
   const [err, setErr] = useState("");
 
   const catOptions = useMemo(
-    () => flattenCategories(categories),
+    () => flattenCategories(indexCategories(categories || [])),
     [categories]
   );
 

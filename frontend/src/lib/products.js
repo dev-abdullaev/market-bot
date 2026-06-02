@@ -33,7 +33,7 @@ export function catName(c) {
  * Build a parent->children index and roots list from a flat category array.
  * Categories are hierarchical via `parent` (id or null for roots).
  */
-export function indexCategories(cats) {
+export function indexCategories(cats = []) {
   const byId = new Map();
   const children = new Map();
   for (const c of cats) byId.set(c.id, c);
@@ -52,7 +52,7 @@ export function indexCategories(cats) {
 
 /** Direct children of `parentId` (null = roots). */
 export function childrenOf(index, parentId) {
-  return index.children.get(parentId ?? null) || [];
+  return index?.children?.get(parentId ?? null) || [];
 }
 
 /**
@@ -77,6 +77,7 @@ export function flattenCategories(index) {
  */
 export function ancestryOf(index, id) {
   const chain = [];
+  if (!index?.byId) return chain;
   let cur = index.byId.get(id);
   let guard = 0;
   while (cur && guard < 12) {
