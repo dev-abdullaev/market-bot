@@ -18,3 +18,19 @@ def test_public_shop_and_catalog():
     cat_data = c.get(f"/api/shop/{store.slug}/catalog").json()
     names = [p["name_uz"] for cc in cat_data["categories"] for p in cc["products"]]
     assert names == ["v"]      # hidden & out-of-stock excluded
+
+
+def test_public_shop_does_not_leak_bot_token():
+    """GET /api/shop/{slug} must NOT expose telegram credentials."""
+    store = Store.objects.create(
+        name="SecretShop",
+        phone="2",
+        telegram_bot_token="super-secret-token",
+        telegram_group_id="-100123456",
+    )
+    c = APIClient()  # unauthenticated — AllowAny endpoint
+    data = c.get(f"/api/shop/{store.slug}").json()
+    assert "name" in data
+    assert "slug" in data
+    assert "telegram_bot_token" not in data, "bot token must NOT appear in public response"
+    assert "telegram_group_id" not in data, "group id must NOT appear in public response"

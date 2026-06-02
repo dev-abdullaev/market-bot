@@ -24,3 +24,23 @@ def test_upload_product_photo():
     assert r.status_code == 200
     p.refresh_from_db()
     assert p.photo_url.endswith(".png") or "/media/" in p.photo_url
+
+
+def _traversal_png():
+    buf = io.BytesIO()
+    Image.new("RGB", (2, 2)).save(buf, "PNG")
+    buf.seek(0)
+    return SimpleUploadedFile("../../evil.png", buf.read(), content_type="image/png")
+
+
+def test_upload_photo_path_traversal_filename_is_sanitized():
+    """A filename with path traversal components must not raise 500 and must
+    store only the basename (no '..' segments) in the resulting photo_url."""
+    store = Store.objects.create(name="T", phone="3")
+    user = User.objects.create_user(username="op2", role="operator", store=store)
+    p = Product.objects.create(store=store, name_ru="b", name_uz="b", price=1)
+    c = APIClient(); c.force_authenticate(user=user)
+    r = c.post(f"/api/products/{p.id}/photo", {"photo": _traversal_png()}, format="multipart")
+    assert r.status_code == 200, f"Expected 200, got {r.status_code}: {r.content}"
+    p.refresh_from_db()
+    assert ".." not in p.photo_url, "photo_url must not contain path traversal segments"

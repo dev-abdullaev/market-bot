@@ -1,3 +1,5 @@
+import os
+
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.generics import RetrieveAPIView
@@ -9,13 +11,13 @@ from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404
 
 from apps.stores.models import Store
-from apps.stores.serializers import StoreSerializer
 from .models import Category, Product
 from .permissions import IsOperatorWithStore
 from .serializers import (
     CategorySerializer,
     ProductSerializer,
     PublicCategorySerializer,
+    PublicStoreSerializer,
 )
 
 
@@ -48,7 +50,8 @@ class ProductViewSet(viewsets.ModelViewSet):
         f = request.FILES.get("photo")
         if not f:
             return Response({"detail": "No file"}, status=400)
-        path = default_storage.save(f"products/{product.id}_{f.name}", f)
+        safe_name = os.path.basename(f.name)
+        path = default_storage.save(f"products/{product.id}_{safe_name}", f)
         product.photo_url = request.build_absolute_uri(default_storage.url(path))
         product.save(update_fields=["photo_url"])
         return Response({"photo_url": product.photo_url})
@@ -56,7 +59,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
 class ShopView(RetrieveAPIView):
     permission_classes = [AllowAny]
-    serializer_class = StoreSerializer
+    serializer_class = PublicStoreSerializer
     lookup_field = "slug"
     queryset = Store.objects.filter(is_active=True)
 

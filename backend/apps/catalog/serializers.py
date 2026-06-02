@@ -1,5 +1,31 @@
 from rest_framework import serializers
+from apps.stores.models import Store
 from .models import Category, Product
+
+
+class PublicStoreSerializer(serializers.ModelSerializer):
+    """Read-only serializer for the unauthenticated shop endpoint.
+
+    Deliberately excludes ``telegram_bot_token`` and ``telegram_group_id``
+    so that credentials are never exposed to anonymous callers.
+    """
+
+    class Meta:
+        model = Store
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "activity_type",
+            "phone",
+            "address",
+            "latitude",
+            "longitude",
+            "logo_url",
+            "currency_code",
+            "is_delivery_enabled",
+            "is_pickup_enabled",
+        ]
 
 
 class CategorySerializer(serializers.ModelSerializer):
