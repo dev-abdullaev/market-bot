@@ -9,6 +9,13 @@ class StoreCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        # Fix 3: block re-registration — orphaning a store's catalog/orders is
+        # a data-integrity hazard; one user may own at most one store.
+        if request.user.store_id:
+            return Response(
+                {"detail": "You already own a store. Use PATCH /api/stores/me to update it."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         ser = StoreSerializer(data=request.data)
         ser.is_valid(raise_exception=True)
         store = ser.save()
