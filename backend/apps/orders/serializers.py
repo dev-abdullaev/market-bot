@@ -1,9 +1,12 @@
+import logging
 from django.db import transaction
 from rest_framework import serializers
 from apps.catalog.models import Product
 from apps.orders.models import Customer
 from apps.notifications.orders import notify_new_order
 from .models import Order, OrderItem
+
+logger = logging.getLogger(__name__)
 
 
 class OrderItemInput(serializers.Serializer):
@@ -64,5 +67,8 @@ class OrderCreateSerializer(serializers.Serializer):
                 total += line
             order.total_amount = total
             order.save(update_fields=["total_amount"])
-        notify_new_order(order)
+        try:
+            notify_new_order(order)
+        except Exception:
+            logger.exception("Failed to send new-order notification for order %s", order.id)
         return order

@@ -1,3 +1,5 @@
+import hmac
+import logging
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -9,6 +11,8 @@ from apps.accounts.models import User
 from apps.notifications.telegram import send_message
 from .models import Order
 from .serializers import OrderCreateSerializer, OrderSerializer
+
+logger = logging.getLogger(__name__)
 
 VALID_STATUSES = {s for s, _ in Order.STATUS}
 
@@ -51,7 +55,7 @@ class BotOrderStatusView(APIView):
 
     def post(self, request):
         secret = request.headers.get("X-Bot-Secret", "")
-        if not settings.BOT_SHARED_SECRET or secret != settings.BOT_SHARED_SECRET:
+        if not settings.BOT_SHARED_SECRET or not hmac.compare_digest(secret, settings.BOT_SHARED_SECRET):
             return Response({"detail": "forbidden"}, status=403)
         new = request.data.get("status")
         if new not in VALID_STATUSES:
@@ -68,7 +72,11 @@ class BotOrderStatusView(APIView):
         order.save(update_fields=["status", "updated_at"])
         customer_tg = order.customer.telegram_id if order.customer else None
         if customer_tg:
-            send_message(customer_tg,
-                         f"📦 Buyurtmangiz #{order.id} holati: <b>{new}</b>")
+            try:
+                send_message(customer_tg,
+                             f"📦 Buyurtmangiz #{order.id} holati: <b>{new}</b>")
+            except Exception:
+                logger.exception("Failed to send status notification to customer %s for order %s",
+                                 customer_tg, order.id)
         return Response({"ok": True, "order_id": order.id, "status": new,
                          "customer_telegram_id": customer_tg})

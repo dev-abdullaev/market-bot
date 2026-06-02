@@ -1,5 +1,8 @@
+import logging
 import httpx
 from django.conf import settings
+
+logger = logging.getLogger(__name__)
 
 API_BASE = "https://api.telegram.org/bot{token}/{method}"
 
@@ -12,7 +15,8 @@ def _call(method: str, payload: dict):
     try:
         resp = httpx.post(url, json=payload, timeout=10)
         return resp.json()
-    except (httpx.HTTPError, ValueError):
+    except (httpx.HTTPError, ValueError) as exc:
+        logger.warning("Telegram %s failed: %s", method, exc)
         return None
 
 

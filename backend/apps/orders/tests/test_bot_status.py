@@ -59,3 +59,16 @@ def test_bot_status_rejects_invalid_status(settings):
                          {"telegram_id": "777", "order_id": order.id, "status": "bogus"},
                          format="json", HTTP_X_BOT_SECRET=SECRET)
     assert r.status_code == 400
+
+
+def test_bot_status_returns_200_when_send_message_raises(settings):
+    """A Telegram failure must never 500 the bot after the DB change took effect (Fix 1)."""
+    settings.BOT_SHARED_SECRET = SECRET
+    store, order = _setup()
+    with patch("apps.orders.views.send_message", side_effect=Exception("telegram down")):
+        r = APIClient().post("/api/bot/order-status",
+                             {"telegram_id": "777", "order_id": order.id, "status": "preparing"},
+                             format="json", HTTP_X_BOT_SECRET=SECRET)
+    assert r.status_code == 200
+    order.refresh_from_db()
+    assert order.status == "preparing"
