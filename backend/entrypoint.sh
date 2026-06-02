@@ -16,6 +16,10 @@ echo "Running migrations..."
 python manage.py migrate --noinput
 
 echo "Collecting static files..."
-python manage.py collectstatic --noinput
+# Non-fatal: in local dev the bind-mounted /app is host-owned and the non-root
+# container user can't write staticfiles/ (PermissionError). On a real host
+# (Render — no bind mount, appuser owns /app) this succeeds. Either way, never
+# block boot on it.
+python manage.py collectstatic --noinput || echo "[entrypoint] collectstatic skipped"
 
 exec "$@"
