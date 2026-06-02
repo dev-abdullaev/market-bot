@@ -7,4 +7,5 @@ db.sqlite3
 venv/
 dist/
 media/
+staticfiles/
 .pytest_cache/

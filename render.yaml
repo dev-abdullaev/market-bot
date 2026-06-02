@@ -1,0 +1,46 @@
+# Render Blueprint — market-bot backend
+# The entrypoint already runs: migrate → collectstatic → gunicorn
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: market-bot-backend
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /api/auth/me   # Returns 401 (unauthenticated) = service is up
+
+    envVars:
+      - key: SECRET_KEY
+        sync: false                  # Set manually in Render dashboard — never commit
+
+      - key: DEBUG
+        value: "0"
+
+      - key: ALLOWED_HOSTS
+        # Replace xxx with your actual Render service subdomain after first deploy.
+        # Comma-separated, no spaces.
+        value: "market-bot-backend.onrender.com,*.onrender.com"
+
+      - key: DATABASE_URL
+        # Paste the Neon pooled connection string (includes ?sslmode=require)
+        sync: false
+
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+
+      - key: BOT_SHARED_SECRET
+        sync: false
+
+      - key: CORS_ALLOWED_ORIGINS
+        # Set to your Netlify domain after frontend is deployed.
+        # Example: https://market-bot.netlify.app
+        # If you use the Netlify /api proxy, CORS is same-origin and this is
+        # technically optional, but set it anyway for direct API callers.
+        value: "https://REPLACE-WITH-NETLIFY-DOMAIN.netlify.app"
+
+      - key: CSRF_TRUSTED_ORIGINS
+        # Comma-separated list of frontend + backend origins.
+        # Example: https://market-bot.netlify.app,https://market-bot-backend.onrender.com
+        value: "https://REPLACE-WITH-NETLIFY-DOMAIN.netlify.app,https://market-bot-backend.onrender.com"
