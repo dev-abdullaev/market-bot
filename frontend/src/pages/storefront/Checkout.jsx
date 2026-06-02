@@ -12,12 +12,13 @@ export default function Checkout() {
   const [form, setForm] = useState({ customer_name: "", customer_phone: "", delivery_address: "" });
   const [done, setDone] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
 
   useEffect(() => { api.get(`/shop/${slug}`).then((r) => setStoreId(r.data.id)); }, [slug]);
   const refresh = () => setCart(getCart());
 
   const submit = async (e) => {
-    e.preventDefault(); setBusy(true);
+    e.preventDefault(); setBusy(true); setErr("");
     try {
       await api.post(`/orders`, {
         store: storeId, ...form,
@@ -26,6 +27,8 @@ export default function Checkout() {
       });
       clearCart(); setDone(true);
       if (tg()) setTimeout(() => tg().close(), 1500);
+    } catch (e2) {
+      setErr(e2?.response?.data?.detail || t("order_failed"));
     } finally { setBusy(false); }
   };
 
@@ -46,6 +49,7 @@ export default function Checkout() {
         </div>
       ))}
       <div className="d-flex justify-content-between my-3"><strong>{t("total")}</strong><strong>{cartTotal()}</strong></div>
+      {err && <div className="alert alert-danger py-2">{err}</div>}
       <form onSubmit={submit}>
         <input className="form-control mb-2" placeholder={t("name")} required
           value={form.customer_name} onChange={(e) => setForm({ ...form, customer_name: e.target.value })} />

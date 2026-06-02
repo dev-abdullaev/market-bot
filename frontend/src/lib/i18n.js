@@ -3,12 +3,14 @@ const STRINGS = {
         name:"Ism", phone:"Telefon", address:"Manzil", login:"Kirish",
         password:"Parol", products:"Mahsulotlar", categories:"Kategoriyalar",
         orders:"Buyurtmalar", save:"Saqlash", price:"Narx", empty:"Bo'sh",
-        order_placed:"Buyurtma qabul qilindi!", register_store:"Do'kon ro'yxati" },
+        order_placed:"Buyurtma qabul qilindi!", register_store:"Do'kon ro'yxati",
+        order_failed:"Buyurtma yuborilmadi. Qayta urinib ko'ring." },
   ru: { cart:"Корзина", checkout:"Оформить", add:"Добавить", total:"Итого",
         name:"Имя", phone:"Телефон", address:"Адрес", login:"Вход",
         password:"Пароль", products:"Товары", categories:"Категории",
         orders:"Заказы", save:"Сохранить", price:"Цена", empty:"Пусто",
-        order_placed:"Заказ принят!", register_store:"Регистрация магазина" },
+        order_placed:"Заказ принят!", register_store:"Регистрация магазина",
+        order_failed:"Не удалось отправить заказ. Попробуйте снова." },
 };
 export function getLang() { return localStorage.getItem("language") || "uz"; }
 export function setLang(l) { localStorage.setItem("language", l); }
