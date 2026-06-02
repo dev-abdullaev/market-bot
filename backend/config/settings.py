@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "apps.stores",
     "apps.catalog",
     "apps.orders",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [
@@ -88,3 +89,5 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
+BOT_SHARED_SECRET = os.getenv("BOT_SHARED_SECRET", "")
+FRONTEND_WEBAPP_URL = os.getenv("FRONTEND_WEBAPP_URL", "")
