@@ -1,5 +1,9 @@
 import hmac
 import logging
+from decimal import Decimal
+from datetime import timedelta
+from django.db.models import Sum, Count
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -9,7 +13,8 @@ from django.shortcuts import get_object_or_404
 from django.conf import settings
 from apps.accounts.models import User
 from apps.notifications.telegram import send_message
-from .models import Order
+from apps.notifications.broadcast import broadcast_to_customers
+from .models import Order, OrderItem
 from .serializers import OrderCreateSerializer, OrderSerializer
 
 logger = logging.getLogger(__name__)
@@ -80,3 +85,73 @@ class BotOrderStatusView(APIView):
                                  customer_tg, order.id)
         return Response({"ok": True, "order_id": order.id, "status": new,
                          "customer_telegram_id": customer_tg})
+
+
+class StatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        store = request.user.store
+        if not store:
+            return Response({"detail": "No store"}, status=404)
+        period = request.query_params.get("period", "30d")
+        qs = Order.objects.filter(store=store).exclude(status="cancelled")
+        now = timezone.now()
+        if period == "today":
+            qs = qs.filter(created_at__date=now.date())
+        elif period == "7d":
+            qs = qs.filter(created_at__gte=now - timedelta(days=7))
+        elif period == "30d":
+            qs = qs.filter(created_at__gte=now - timedelta(days=30))
+        agg = qs.aggregate(revenue=Sum("total_amount"), cnt=Count("id"))
+        revenue = agg["revenue"] or Decimal("0")
+        cnt = agg["cnt"] or 0
+        avg = (revenue / cnt) if cnt else Decimal("0")
+        top = (OrderItem.objects.filter(order__in=qs)
+               .values("product_name")
+               .annotate(qty=Sum("quantity"), rev=Sum("line_total"))
+               .order_by("-qty")[:5])
+        return Response({
+            "period": period,
+            "revenue": f"{revenue:.2f}",
+            "orders_count": cnt,
+            "avg_check": f"{avg:.2f}",
+            "top_products": [{"name": t["product_name"], "qty": t["qty"],
+                              "revenue": f"{t['rev']:.2f}"} for t in top],
+        })
+
+
+class ClientsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        store = request.user.store
+        if not store:
+            return Response({"detail": "No store"}, status=404)
+        rows = (Order.objects.filter(store=store, customer__isnull=False)
+                .values("customer_id", "customer__full_name", "customer__phone",
+                        "customer__telegram_id")
+                .annotate(orders_count=Count("id"), total=Sum("total_amount"))
+                .order_by("-total"))
+        return Response([{
+            "id": r["customer_id"],
+            "full_name": r["customer__full_name"],
+            "phone": r["customer__phone"],
+            "telegram_id": r["customer__telegram_id"],
+            "orders_count": r["orders_count"],
+            "total_spent": f"{r['total'] or 0:.2f}",
+        } for r in rows])
+
+
+class BroadcastView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        store = request.user.store
+        if not store:
+            return Response({"detail": "No store"}, status=404)
+        text = (request.data.get("text") or "").strip()
+        if not text:
+            return Response({"detail": "Text required"}, status=400)
+        sent = broadcast_to_customers(store, text)
+        return Response({"sent": sent})
