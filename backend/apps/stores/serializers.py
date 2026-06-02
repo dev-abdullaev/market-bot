@@ -25,5 +25,6 @@ class StoreSerializer(serializers.ModelSerializer):
             "click_url", "uzum_url",
             "msg_new", "msg_preparing", "msg_delivering", "msg_delivered", "msg_cancelled",
             "ui_theme", "ui_primary_color", "ui_font_family", "menu_view_mode",
+            "showcase_config",
         ]
         read_only_fields = ["id", "slug", "is_active"]

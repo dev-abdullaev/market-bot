@@ -52,6 +52,8 @@ class Store(models.Model):
     ui_primary_color = models.CharField(max_length=16, blank=True)
     ui_font_family = models.CharField(max_length=16, default="sans")
     menu_view_mode = models.CharField(max_length=24, default="grid_categories")
+    # Menyu konstruktori / showcase builder — free-form JSON owned by the frontend
+    showcase_config = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
