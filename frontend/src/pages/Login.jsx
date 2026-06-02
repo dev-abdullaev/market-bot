@@ -1,54 +1,100 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../lib/auth.js";
-import { t } from "../lib/i18n.js";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, Lock, Phone, Store } from "lucide-react";
+import { login } from "../lib/auth";
+import { t } from "../lib/i18n";
+import { Card } from "../components/ui/Card";
+import { Button } from "../components/ui/Button";
+import { Input, Label } from "../components/ui/Input";
+import { ErrorAlert } from "../components/ui/Alert";
+import { Spinner } from "../components/ui/Spinner";
 
 export default function Login() {
   const nav = useNavigate();
-  const [u, setU] = useState(""); const [p, setP] = useState("");
-  const [err, setErr] = useState(""); const [busy, setBusy] = useState(false);
+  const reduce = useReducedMotion();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+
   const submit = async (e) => {
-    e.preventDefault(); setErr(""); setBusy(true);
-    try { await login(u, p); nav("/panel"); }
-    catch { setErr("Login yoki parol xato"); }
-    finally { setBusy(false); }
+    e.preventDefault();
+    setErr("");
+    setBusy(true);
+    try {
+      await login(username, password);
+      nav("/panel");
+    } catch {
+      setErr(t("login_failed"));
+    } finally {
+      setBusy(false);
+    }
   };
+
   return (
-    <div className="d-flex align-items-center justify-content-center surface-muted"
-      style={{ minHeight: "100vh", padding: "1rem" }}>
-      <div className="card auth-card w-100" style={{ maxWidth: 380 }}>
-        <div className="card-body p-4 p-sm-5">
-          <div className="text-center mb-4">
-            <span className="auth-mark mx-auto mb-3"><i className="bi bi-shop-window" /></span>
-            <h1 className="h4 mb-1">market<span className="text-primary">bot</span></h1>
-            <p className="text-muted small mb-0">{t("panel")}</p>
+    <div className="relative flex min-h-svh items-center justify-center overflow-hidden bg-muted px-4 py-10">
+      {/* Decorative ambient blobs */}
+      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-primary/15 blur-3xl animate-blob-1" />
+      <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-secondary/15 blur-3xl animate-blob-2" />
+
+      <motion.div
+        initial={reduce ? { opacity: 0 } : { opacity: 0, y: 24, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ type: "spring", stiffness: 300, damping: 26 }}
+        className="relative w-full max-w-sm"
+      >
+        <Card className="p-6 sm:p-8">
+          <div className="mb-6 flex flex-col items-center text-center">
+            <span className="mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lift">
+              <Store className="h-7 w-7" strokeWidth={2.1} />
+            </span>
+            <h1 className="font-display text-2xl font-extrabold tracking-tight">
+              market<span className="text-primary">bot</span>
+            </h1>
+            <p className="mt-1 text-sm text-muted-foreground">{t("panel")}</p>
           </div>
-          {err && <div className="alert alert-danger py-2 d-flex align-items-center gap-2">
-            <i className="bi bi-exclamation-circle" /><span>{err}</span></div>}
-          <form onSubmit={submit}>
-            <div className="mb-3">
-              <label className="form-label">{t("phone")}</label>
-              <div className="input-group">
-                <span className="input-group-text bg-white"><i className="bi bi-person" /></span>
-                <input className="form-control" value={u} autoFocus
-                  onChange={(e) => setU(e.target.value)} />
-              </div>
+
+          <form onSubmit={submit} className="space-y-4">
+            <ErrorAlert message={err} />
+
+            <div>
+              <Label htmlFor="login-phone">{t("phone")}</Label>
+              <Input
+                id="login-phone"
+                icon={Phone}
+                autoFocus
+                autoComplete="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
-            <div className="mb-4">
-              <label className="form-label">{t("password")}</label>
-              <div className="input-group">
-                <span className="input-group-text bg-white"><i className="bi bi-lock" /></span>
-                <input type="password" className="form-control" value={p}
-                  onChange={(e) => setP(e.target.value)} />
-              </div>
+
+            <div>
+              <Label htmlFor="login-password">{t("password")}</Label>
+              <Input
+                id="login-password"
+                icon={Lock}
+                type="password"
+                autoComplete="current-password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </div>
-            <button className="btn btn-primary w-100 btn-lg" disabled={busy}>
-              {busy ? <span className="spinner-border spinner-border-sm me-2" /> : <i className="bi bi-box-arrow-in-right me-2" />}
+
+            <Button
+              type="submit"
+              size="lg"
+              disabled={busy}
+              className="w-full"
+            >
+              {busy ? <Spinner className="text-primary-foreground" /> : null}
               {t("login")}
-            </button>
+              {!busy ? <ArrowRight className="h-4 w-4" strokeWidth={2.2} /> : null}
+            </Button>
           </form>
-        </div>
-      </div>
+        </Card>
+      </motion.div>
     </div>
   );
 }

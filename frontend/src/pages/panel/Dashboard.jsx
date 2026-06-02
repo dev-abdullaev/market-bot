@@ -1,107 +1,309 @@
 import { useEffect, useState } from "react";
-import api from "../../lib/api.js";
-import { t } from "../../lib/i18n.js";
-import Spinner from "../../components/Spinner.jsx";
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from "framer-motion";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import {
+  BarChart3,
+  LayoutDashboard,
+  Receipt,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
+import api from "../../lib/api";
+import { t } from "../../lib/i18n";
+import { formatPrice } from "../../lib/format";
+import { cn } from "../../lib/cn";
+import { PageHeader, EmptyState, Skeleton } from "../../components/panel/common";
 
-const PERIODS = [["today", "today"], ["7d", "d7"], ["30d", "d30"], ["all", "all"]];
+const PERIODS = ["today", "7d", "30d", "all"];
+const BAR_COLORS = ["#2563EB", "#6366F1", "#059669", "#0EA5E9", "#8B5CF6"];
 
-const fmt = (n) => {
-  const v = Number(n || 0);
-  return v.toLocaleString("ru-RU", { maximumFractionDigits: 0 });
-};
+/** Animated count-up that respects reduced motion and formats on the fly. */
+function CountUp({ value, format }) {
+  const reduce = useReducedMotion();
+  const mv = useMotionValue(0);
+  const text = useTransform(mv, (v) => format(Math.round(v)));
+  useEffect(() => {
+    if (reduce) {
+      mv.set(value);
+      return;
+    }
+    const controls = animate(mv, value, { duration: 0.9, ease: "easeOut" });
+    return () => controls.stop();
+  }, [value, mv, reduce]);
+  return <motion.span>{text}</motion.span>;
+}
 
-const CARDS = [
-  { key: "revenue", labelKey: "revenue", icon: "bi-cash-stack", tint: "#059669", bg: "#ECFDF5", suffix: " so'm" },
-  { key: "orders_count", labelKey: "orders_count", icon: "bi-receipt", tint: "#2563EB", bg: "#EFF6FF", suffix: "" },
-  { key: "avg_check", labelKey: "avg_check", icon: "bi-graph-up-arrow", tint: "#6366F1", bg: "#EEF2FF", suffix: " so'm" },
-];
+function StatCard({ icon: Icon, tint, label, value, format, index }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 18 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 26,
+        delay: index * 0.06,
+      }}
+      className="rounded-2xl border border-border bg-background p-5 shadow-soft"
+    >
+      <div className="flex items-center justify-between">
+        <span
+          className={cn(
+            "flex h-11 w-11 items-center justify-center rounded-xl",
+            tint
+          )}
+        >
+          <Icon className="h-5 w-5" strokeWidth={2.3} />
+        </span>
+      </div>
+      <p className="mt-4 font-display text-2xl font-extrabold tracking-tight text-foreground">
+        <CountUp value={Number(value) || 0} format={format} />
+      </p>
+      <p className="mt-0.5 text-sm font-semibold text-muted-foreground">
+        {label}
+      </p>
+    </motion.div>
+  );
+}
+
+function PeriodControl({ value, onChange }) {
+  return (
+    <div className="flex items-center rounded-xl border border-border bg-background p-0.5 shadow-soft">
+      {PERIODS.map((p) => (
+        <button
+          key={p}
+          type="button"
+          onClick={() => onChange(p)}
+          className={cn(
+            "relative rounded-lg px-3 py-1.5 text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring sm:text-sm",
+            value === p ? "text-primary-foreground" : "text-muted-foreground"
+          )}
+        >
+          {value === p ? (
+            <motion.span
+              layoutId="period-active"
+              className="absolute inset-0 -z-0 rounded-lg bg-gradient-to-r from-primary to-secondary"
+              transition={{ type: "spring", stiffness: 400, damping: 32 }}
+            />
+          ) : null}
+          <span className="relative z-10">{t(`period_${p}`)}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function ChartTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null;
+  const p = payload[0].payload;
+  return (
+    <div className="rounded-xl border border-border bg-background px-3 py-2 text-xs shadow-lift">
+      <p className="font-bold text-foreground">{p.name}</p>
+      <p className="mt-0.5 text-muted-foreground">
+        {t("revenue")}: <span className="font-bold text-foreground">{formatPrice(p.revenue)}</span>
+      </p>
+      <p className="text-muted-foreground">
+        {t("qty_short")}: <span className="font-bold text-foreground">{p.qty}</span>
+      </p>
+    </div>
+  );
+}
 
 export default function Dashboard() {
+  const reduce = useReducedMotion();
   const [period, setPeriod] = useState("today");
-  const [data, setData] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let active = true;
-    api.get(`/admin/stats?period=${period}`)
-      .then((r) => { if (active) setData(r.data); })
-      .catch(() => { if (active) setData({}); });
-    return () => { active = false; };
+    let alive = true;
+    // Mark loading asynchronously so we don't trigger a synchronous cascade.
+    Promise.resolve().then(() => {
+      if (alive) setLoading(true);
+    });
+    api
+      .get("/admin/stats", { params: { period } })
+      .then((r) => {
+        if (alive) setStats(r.data);
+      })
+      .catch(() => {
+        if (alive) setStats(null);
+      })
+      .finally(() => {
+        if (alive) setLoading(false);
+      });
+    return () => {
+      alive = false;
+    };
   }, [period]);
 
-  const top = data?.top_products || [];
-  const maxQty = top.reduce((m, p) => Math.max(m, p.qty || 0), 0) || 1;
+  const top = Array.isArray(stats?.top_products) ? stats.top_products : [];
+  const chartData = top.slice(0, 6).map((p) => ({
+    name: p.name,
+    short: p.name?.length > 12 ? p.name.slice(0, 12) + "…" : p.name,
+    revenue: Number(p.revenue) || 0,
+    qty: Number(p.qty) || 0,
+  }));
 
   return (
     <div>
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <p className="section-eyebrow mb-0 text-muted">
-          <i className="bi bi-bar-chart-line me-2" />{t("dashboard")}
-        </p>
-        <div className="seg-control" role="tablist" aria-label="Period">
-          {PERIODS.map(([val, lab]) => (
-            <button key={val} type="button" className={period === val ? "active" : ""}
-              onClick={() => setPeriod(val)} aria-pressed={period === val}>{t(lab)}</button>
-          ))}
-        </div>
-      </div>
+      <PageHeader
+        icon={LayoutDashboard}
+        title={t("nav_dashboard")}
+        action={<PeriodControl value={period} onChange={setPeriod} />}
+      />
 
-      {!data ? <Spinner /> : (
-        <>
-          <div className="row g-3 mb-4">
-            {CARDS.map((c) => (
-              <div className="col-12 col-md-4" key={c.key}>
-                <div className="card stat-card card-hover h-100">
-                  <div className="card-body d-flex align-items-center gap-3">
-                    <span className="icon-chip" style={{ background: c.bg, color: c.tint }}>
-                      <i className={`bi ${c.icon}`} />
-                    </span>
-                    <div>
-                      <div className="stat-label">{t(c.labelKey)}</div>
-                      <div className="stat-value">{fmt(data[c.key])}<span className="fs-6 text-muted">{c.suffix}</span></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      {loading ? (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <Skeleton key={i} className="h-32 rounded-2xl" />
             ))}
           </div>
+          <Skeleton className="h-72 rounded-2xl" />
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <StatCard
+              index={0}
+              icon={Wallet}
+              tint="bg-primary/10 text-primary"
+              label={t("revenue")}
+              value={stats?.revenue}
+              format={(v) => formatPrice(v)}
+            />
+            <StatCard
+              index={1}
+              icon={Receipt}
+              tint="bg-secondary/10 text-secondary"
+              label={t("orders_count")}
+              value={stats?.orders_count}
+              format={(v) => String(v)}
+            />
+            <StatCard
+              index={2}
+              icon={TrendingUp}
+              tint="bg-accent/10 text-accent"
+              label={t("avg_check")}
+              value={stats?.avg_check}
+              format={(v) => formatPrice(v)}
+            />
+          </div>
 
-          <div className="card">
-            <div className="card-body">
-              <h2 className="h5 mb-3"><i className="bi bi-trophy me-2 text-warning" />{t("top_products")}</h2>
-              {top.length === 0 ? (
-                <div className="empty-state"><i className="bi bi-inbox" />{t("no_data")}</div>
-              ) : (
-                <div className="table-responsive">
-                  <table className="table align-middle mb-0">
-                    <thead>
-                      <tr className="text-muted small text-uppercase">
-                        <th>{t("products")}</th>
-                        <th style={{ width: "40%" }}>{t("qty")}</th>
-                        <th className="text-end">{t("revenue")}</th>
+          <motion.div
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 26, delay: 0.18 }}
+            className="rounded-2xl border border-border bg-background p-5 shadow-soft"
+          >
+            <div className="mb-4 flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" strokeWidth={2.3} />
+              <h2 className="font-display text-base font-extrabold text-foreground">
+                {t("top_products")}
+              </h2>
+            </div>
+
+            {chartData.length === 0 ? (
+              <EmptyState icon={BarChart3} title={t("no_data")} />
+            ) : (
+              <>
+                <div className="h-64 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={chartData}
+                      margin={{ top: 8, right: 8, left: -8, bottom: 0 }}
+                    >
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#E4ECFC"
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="short"
+                        tick={{ fill: "#64748B", fontSize: 12, fontWeight: 600 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fill: "#64748B", fontSize: 11 }}
+                        axisLine={false}
+                        tickLine={false}
+                        width={56}
+                        tickFormatter={(v) =>
+                          v >= 1000 ? `${Math.round(v / 1000)}k` : v
+                        }
+                      />
+                      <Tooltip
+                        cursor={{ fill: "#F1F5FD" }}
+                        content={<ChartTooltip />}
+                      />
+                      <Bar
+                        dataKey="revenue"
+                        radius={[8, 8, 0, 0]}
+                        isAnimationActive={!reduce}
+                        animationDuration={700}
+                      >
+                        {chartData.map((_, i) => (
+                          <Cell
+                            key={i}
+                            fill={BAR_COLORS[i % BAR_COLORS.length]}
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="mt-5 overflow-hidden rounded-xl border border-border">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted text-left text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                      <tr>
+                        <th className="px-4 py-2.5">{t("product")}</th>
+                        <th className="px-4 py-2.5 text-right">{t("qty_short")}</th>
+                        <th className="px-4 py-2.5 text-right">{t("revenue")}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {top.map((p, i) => (
-                        <tr key={i}>
-                          <td className="fw-semibold">{p.name}</td>
-                          <td>
-                            <div className="d-flex align-items-center gap-2">
-                              <div className="bar-track flex-grow-1">
-                                <div className="bar-fill" style={{ width: `${(p.qty / maxQty) * 100}%` }} />
-                              </div>
-                              <span className="small fw-semibold" style={{ minWidth: 28 }}>{p.qty}</span>
-                            </div>
+                        <tr
+                          key={`${p.name}-${i}`}
+                          className="border-t border-border"
+                        >
+                          <td className="px-4 py-2.5 font-semibold text-foreground">
+                            {p.name}
                           </td>
-                          <td className="text-end fw-semibold">{fmt(p.revenue)} <span className="text-muted small">so'm</span></td>
+                          <td className="px-4 py-2.5 text-right text-muted-foreground">
+                            {p.qty}
+                          </td>
+                          <td className="px-4 py-2.5 text-right font-bold text-foreground">
+                            {formatPrice(p.revenue)}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              )}
-            </div>
-          </div>
-        </>
+              </>
+            )}
+          </motion.div>
+        </div>
       )}
     </div>
   );

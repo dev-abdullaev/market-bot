@@ -1,141 +1,253 @@
 import { useEffect, useState } from "react";
-import api from "../../lib/api.js";
-import { t } from "../../lib/i18n.js";
-import Spinner from "../../components/Spinner.jsx";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Percent, Plus, Ticket } from "lucide-react";
+import api from "../../lib/api";
+import { t } from "../../lib/i18n";
+import { formatPrice } from "../../lib/format";
+import { asList } from "../../lib/panel";
+import { Card } from "../../components/ui/Card";
+import { Button } from "../../components/ui/Button";
+import { Input, Label, Select } from "../../components/ui/Input";
+import { Spinner } from "../../components/ui/Spinner";
+import { cn } from "../../lib/cn";
+import {
+  ConfirmDelete,
+  EmptyState,
+  PageHeader,
+  SkeletonList,
+} from "../../components/panel/common";
 
-const EMPTY = { code: "", discount_type: "percent", discount_value: "", valid_until: "", usage_limit: "" };
+const EMPTY = {
+  code: "",
+  discount_type: "percent",
+  discount_value: "",
+  valid_until: "",
+  usage_limit: "",
+};
+
+function formatDiscount(p) {
+  if (p.discount_type === "percent") return `${p.discount_value}%`;
+  return formatPrice(p.discount_value);
+}
+
+function PromoRow({ promo, onToggle, onDelete, busy, index }) {
+  const reduce = useReducedMotion();
+  return (
+    <motion.div
+      layout
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.96 }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 26,
+        delay: Math.min(index * 0.03, 0.18),
+      }}
+      className="flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-background p-4 shadow-soft"
+    >
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/10 text-secondary">
+        <Ticket className="h-5 w-5" strokeWidth={2.2} />
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-lg bg-foreground px-2.5 py-1 font-mono text-sm font-bold uppercase tracking-wider text-background">
+            {promo.code}
+          </span>
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">
+            <Percent className="h-3 w-3" strokeWidth={2.4} />
+            {formatDiscount(promo)}
+          </span>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {t("used_count")}: <span className="font-bold text-foreground">{promo.used_count ?? 0}</span>
+          {promo.usage_limit ? ` / ${promo.usage_limit}` : ""}
+          {promo.valid_until ? ` · ${t("valid_until")} ${promo.valid_until}` : ""}
+        </p>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onToggle(promo)}
+          aria-pressed={promo.is_active}
+          className={cn(
+            "inline-flex h-9 items-center gap-2 rounded-xl px-3 text-xs font-bold transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            promo.is_active
+              ? "bg-accent/10 text-accent"
+              : "bg-muted text-muted-foreground"
+          )}
+        >
+          <span
+            className={cn(
+              "h-2 w-2 rounded-full",
+              promo.is_active ? "bg-accent" : "bg-muted-foreground"
+            )}
+          />
+          {promo.is_active ? t("active") : t("inactive")}
+        </button>
+        <ConfirmDelete busy={busy} onConfirm={() => onDelete(promo.id)} />
+      </div>
+    </motion.div>
+  );
+}
 
 export default function PromosPage() {
-  const [rows, setRows] = useState(null);
-  const [f, setF] = useState(EMPTY);
-  const [busy, setBusy] = useState(false);
+  const [promos, setPromos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState(EMPTY);
+  const [saving, setSaving] = useState(false);
+  const [busyId, setBusyId] = useState(null);
 
-  const load = () => api.get("/promos").then((r) => setRows(r.data)).catch(() => setRows([]));
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    let alive = true;
+    api
+      .get("/promos")
+      .then((r) => alive && setPromos(asList(r.data)))
+      .catch(() => alive && setPromos([]))
+      .finally(() => alive && setLoading(false));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const set = (k) => (e) => setForm((s) => ({ ...s, [k]: e.target.value }));
 
   const add = async (e) => {
     e.preventDefault();
-    setBusy(true);
+    if (!form.code.trim() || !form.discount_value) return;
+    setSaving(true);
     try {
       const payload = {
-        code: f.code.trim(),
-        discount_type: f.discount_type,
-        discount_value: f.discount_value,
-        valid_until: f.valid_until || null,
-        usage_limit: f.usage_limit === "" ? null : Number(f.usage_limit),
+        code: form.code.trim().toUpperCase(),
+        discount_type: form.discount_type,
+        discount_value: Number(form.discount_value),
+        is_active: true,
+        valid_until: form.valid_until || null,
+        usage_limit: form.usage_limit ? Number(form.usage_limit) : null,
       };
-      await api.post("/promos", payload);
-      setF(EMPTY);
-      load();
-    } finally { setBusy(false); }
+      const { data } = await api.post("/promos", payload);
+      setPromos((list) => [data, ...list]);
+      setForm(EMPTY);
+    } catch {
+      /* ignore */
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const toggle = async (p) => { await api.patch(`/promos/${p.id}`, { is_active: !p.is_active }); load(); };
-  const del = async (id) => {
-    if (!window.confirm(t("delete") + "?")) return;
-    await api.delete(`/promos/${id}`); load();
+  const toggle = async (promo) => {
+    const next = !promo.is_active;
+    setPromos((list) =>
+      list.map((p) => (p.id === promo.id ? { ...p, is_active: next } : p))
+    );
+    try {
+      await api.patch(`/promos/${promo.id}`, { is_active: next });
+    } catch {
+      setPromos((list) =>
+        list.map((p) => (p.id === promo.id ? { ...p, is_active: !next } : p))
+      );
+    }
   };
 
-  if (!rows) return <Spinner />;
+  const remove = async (id) => {
+    setBusyId(id);
+    try {
+      await api.delete(`/promos/${id}`);
+      setPromos((list) => list.filter((p) => p.id !== id));
+    } catch {
+      /* ignore */
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   return (
-    <div className="row g-3">
-      <div className="col-12 col-lg-5">
-        <div className="card">
-          <div className="card-body">
-            <h2 className="h6 mb-3"><i className="bi bi-plus-circle me-2 text-primary" />{t("add")}</h2>
-            <form onSubmit={add}>
-              <label className="form-label">{t("code")}</label>
-              <input className="form-control mb-2 text-uppercase" placeholder="SALE10" required
-                value={f.code} onChange={(e) => setF({ ...f, code: e.target.value })} />
+    <div>
+      <PageHeader icon={Ticket} title={t("nav_promos")} />
 
-              <div className="row g-2 mb-2">
-                <div className="col-7">
-                  <label className="form-label">{t("type")}</label>
-                  <select className="form-select" value={f.discount_type}
-                    onChange={(e) => setF({ ...f, discount_type: e.target.value })}>
-                    <option value="percent">{t("percent")} (%)</option>
-                    <option value="fixed">{t("fixed")} (so'm)</option>
-                  </select>
-                </div>
-                <div className="col-5">
-                  <label className="form-label">{t("value")}</label>
-                  <input type="number" className="form-control" required min="0"
-                    value={f.discount_value} onChange={(e) => setF({ ...f, discount_value: e.target.value })} />
-                </div>
-              </div>
-
-              <div className="row g-2 mb-3">
-                <div className="col-7">
-                  <label className="form-label">Amal qiladi</label>
-                  <input type="date" className="form-control"
-                    value={f.valid_until} onChange={(e) => setF({ ...f, valid_until: e.target.value })} />
-                </div>
-                <div className="col-5">
-                  <label className="form-label">Limit</label>
-                  <input type="number" className="form-control" min="0" placeholder="∞"
-                    value={f.usage_limit} onChange={(e) => setF({ ...f, usage_limit: e.target.value })} />
-                </div>
-              </div>
-
-              <button className="btn btn-primary w-100" disabled={busy}>
-                <i className="bi bi-plus-lg me-1" />{t("add")}
-              </button>
-            </form>
+      <Card className="mb-6 p-4 sm:p-5">
+        <form onSubmit={add} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
+          <div>
+            <Label htmlFor="pr-code">{t("promo_code")}</Label>
+            <Input
+              id="pr-code"
+              value={form.code}
+              onChange={set("code")}
+              placeholder="SALE20"
+              className="uppercase"
+            />
           </div>
-        </div>
-      </div>
-
-      <div className="col-12 col-lg-7">
-        <div className="card">
-          <div className="card-body">
-            <h2 className="h6 mb-3"><i className="bi bi-percent me-2 text-primary" />{t("promos")}</h2>
-            {rows.length === 0 ? (
-              <div className="empty-state"><i className="bi bi-ticket-perforated" />{t("no_data")}</div>
-            ) : (
-              <div className="table-responsive">
-                <table className="table align-middle mb-0">
-                  <thead>
-                    <tr className="text-muted small text-uppercase">
-                      <th>{t("code")}</th>
-                      <th>{t("value")}</th>
-                      <th className="text-center">{t("used")}</th>
-                      <th className="text-center">{t("active")}</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {rows.map((p) => (
-                      <tr key={p.id}>
-                        <td><span className="badge text-bg-light border font-monospace">{p.code}</span></td>
-                        <td className="fw-semibold">
-                          {p.discount_value}{p.discount_type === "percent" ? "%" : " so'm"}
-                        </td>
-                        <td className="text-center text-muted">
-                          {p.used_count}{p.usage_limit ? ` / ${p.usage_limit}` : ""}
-                        </td>
-                        <td className="text-center">
-                          <div className="form-check form-switch d-inline-block">
-                            <input className="form-check-input" type="checkbox" role="switch"
-                              checked={p.is_active} onChange={() => toggle(p)}
-                              aria-label="Toggle active" style={{ cursor: "pointer" }} />
-                          </div>
-                        </td>
-                        <td className="text-end">
-                          <button className="btn btn-sm btn-outline-danger" onClick={() => del(p.id)}
-                            aria-label={t("delete")}>
-                            <i className="bi bi-trash" />
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+          <div>
+            <Label htmlFor="pr-type">{t("discount_type")}</Label>
+            <Select id="pr-type" value={form.discount_type} onChange={set("discount_type")}>
+              <option value="percent">{t("type_percent")}</option>
+              <option value="fixed">{t("type_fixed")}</option>
+            </Select>
           </div>
-        </div>
-      </div>
+          <div>
+            <Label htmlFor="pr-value">{t("discount_value")}</Label>
+            <Input
+              id="pr-value"
+              type="number"
+              min="0"
+              value={form.discount_value}
+              onChange={set("discount_value")}
+            />
+          </div>
+          <div>
+            <Label htmlFor="pr-until">{t("valid_until")}</Label>
+            <Input
+              id="pr-until"
+              type="date"
+              value={form.valid_until}
+              onChange={set("valid_until")}
+            />
+          </div>
+          <div>
+            <Label htmlFor="pr-limit">{t("usage_limit")}</Label>
+            <Input
+              id="pr-limit"
+              type="number"
+              min="0"
+              value={form.usage_limit}
+              onChange={set("usage_limit")}
+            />
+          </div>
+          <div className="lg:col-span-5">
+            <Button type="submit" disabled={saving} className="w-full sm:w-auto">
+              {saving ? (
+                <Spinner className="text-primary-foreground" size={16} />
+              ) : (
+                <Plus className="h-4 w-4" strokeWidth={2.4} />
+              )}
+              {t("create")}
+            </Button>
+          </div>
+        </form>
+      </Card>
+
+      {loading ? (
+        <SkeletonList rows={4} />
+      ) : promos.length === 0 ? (
+        <EmptyState icon={Ticket} title={t("no_promos")} />
+      ) : (
+        <motion.div layout className="space-y-3">
+          <AnimatePresence initial={false}>
+            {promos.map((p, i) => (
+              <PromoRow
+                key={p.id}
+                promo={p}
+                index={i}
+                busy={busyId === p.id}
+                onToggle={toggle}
+                onDelete={remove}
+              />
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      )}
     </div>
   );
 }
