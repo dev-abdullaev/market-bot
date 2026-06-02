@@ -21,7 +21,7 @@ import { t, getLang, setLang } from "../../lib/i18n";
 import { cn } from "../../lib/cn";
 
 const NAV = [
-  { to: "/panel", end: true, icon: LayoutDashboard, key: "nav_dashboard" },
+  { to: "/panel", end: true, icon: LayoutDashboard, key: "nav_analytics" },
   { to: "/panel/orders", icon: Receipt, key: "nav_orders" },
   { to: "/panel/products", icon: Package, key: "nav_products" },
   { to: "/panel/categories", icon: Tags, key: "nav_categories" },
