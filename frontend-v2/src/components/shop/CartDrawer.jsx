@@ -36,7 +36,7 @@ function Stepper({ qty, onDec, onInc }) {
   );
 }
 
-export function CartDrawer({ open, onOpenChange, cart, currency }) {
+export function CartDrawer({ open, onOpenChange, cart, currency, onCheckout }) {
   const { list, total, count, setQty, remove } = cart;
 
   return (
@@ -143,7 +143,12 @@ export function CartDrawer({ open, onOpenChange, cart, currency }) {
               {formatPrice(total, currency)}
             </motion.span>
           </div>
-          <Button variant="accent" size="lg" className="w-full rounded-2xl text-base">
+          <Button
+            variant="accent"
+            size="lg"
+            className="w-full rounded-2xl text-base"
+            onClick={onCheckout}
+          >
             Buyurtma berish
           </Button>
         </div>

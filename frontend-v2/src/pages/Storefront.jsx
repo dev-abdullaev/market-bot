@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { Header } from "../components/shop/Header";
 import { Hero } from "../components/shop/Hero";
@@ -12,6 +12,7 @@ import { fetchShop, fetchCatalog } from "../lib/api";
 
 export default function Storefront() {
   const { slug = "demo-shop" } = useParams();
+  const nav = useNavigate();
   const cart = useCart();
 
   const [store, setStore] = useState(null);
@@ -109,6 +110,10 @@ export default function Storefront() {
         onOpenChange={setCartOpen}
         cart={cart}
         currency={currency}
+        onCheckout={() => {
+          setCartOpen(false);
+          nav(`/shop/${slug}/checkout`);
+        }}
       />
     </div>
   );
