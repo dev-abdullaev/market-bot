@@ -1,6 +1,8 @@
 from django.db import transaction
 from rest_framework import serializers
 from apps.catalog.models import Product
+from apps.orders.models import Customer
+from apps.notifications.orders import notify_new_order
 from .models import Order, OrderItem
 
 
@@ -40,9 +42,15 @@ class OrderCreateSerializer(serializers.Serializer):
     def create(self, validated):
         items = validated.pop("items")
         store_id = validated.pop("store")
-        validated.pop("telegram_id", None)
+        telegram_id = validated.pop("telegram_id", "") or ""
         with transaction.atomic():
-            order = Order.objects.create(store_id=store_id, **validated)
+            customer = None
+            if telegram_id:
+                customer, _ = Customer.objects.get_or_create(
+                    telegram_id=telegram_id,
+                    defaults={"full_name": validated.get("customer_name", ""),
+                              "phone": validated.get("customer_phone", "")})
+            order = Order.objects.create(store_id=store_id, customer=customer, **validated)
             total = 0
             for it in items:
                 product = Product.objects.filter(id=it["product"], store_id=store_id).first()
@@ -56,4 +64,5 @@ class OrderCreateSerializer(serializers.Serializer):
                 total += line
             order.total_amount = total
             order.save(update_fields=["total_amount"])
+        notify_new_order(order)
         return order
