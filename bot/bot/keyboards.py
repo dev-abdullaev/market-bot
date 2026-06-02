@@ -36,7 +36,9 @@ def main_menu(lang: str, webapp_url: str) -> ReplyKeyboardMarkup:
 
 
 def language_inline() -> InlineKeyboardMarkup:
+    # Plain text (no flag/regional-indicator emojis): some Telegram clients
+    # fail to render flag emojis and the button then appears empty.
     return InlineKeyboardMarkup(inline_keyboard=[[
-        InlineKeyboardButton(text="🇺🇿 O'zbekcha", callback_data="lang:uz"),
-        InlineKeyboardButton(text="🇷🇺 Русский", callback_data="lang:ru"),
+        InlineKeyboardButton(text="O'zbekcha", callback_data="lang:uz"),
+        InlineKeyboardButton(text="Русский", callback_data="lang:ru"),
     ]])
