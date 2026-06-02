@@ -19,6 +19,7 @@ from .serializers import (
     PublicCategorySerializer,
     PublicStoreSerializer,
 )
+from .services import import_products
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -44,6 +45,19 @@ class ProductViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(store=self.request.user.store)
 
+    @action(detail=False, methods=["post"], url_path="import")
+    def import_rows(self, request):
+        """POST /api/products/import
+
+        Body: {"rows": [{...}, ...]}
+        Returns: {"created": N, "skipped": M, "errors": [...]}
+        """
+        rows = request.data.get("rows", [])
+        if not isinstance(rows, list):
+            return Response({"detail": "rows must be a list"}, status=400)
+        result = import_products(store=request.user.store, rows=rows)
+        return Response(result)
+
     @action(detail=True, methods=["post"], parser_classes=[MultiPartParser, FormParser])
     def photo(self, request, pk=None):
         product = self.get_object()
@@ -52,8 +66,15 @@ class ProductViewSet(viewsets.ModelViewSet):
             return Response({"detail": "No file"}, status=400)
         safe_name = os.path.basename(f.name)
         path = default_storage.save(f"products/{product.id}_{safe_name}", f)
-        product.photo_url = request.build_absolute_uri(default_storage.url(path))
-        product.save(update_fields=["photo_url"])
+        url = request.build_absolute_uri(default_storage.url(path))
+        product.photo_url = url
+        # Also maintain the images list: append if not already present,
+        # and set photo_url as the first image when the list is empty.
+        images = list(product.images) if product.images else []
+        if url not in images:
+            images.append(url)
+        product.images = images
+        product.save(update_fields=["photo_url", "images"])
         return Response({"photo_url": product.photo_url})
 
 

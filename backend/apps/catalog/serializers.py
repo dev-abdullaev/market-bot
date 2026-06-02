@@ -38,9 +38,17 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ["id", "category", "name_ru", "name_uz", "description_ru",
-                  "description_uz", "price", "unit", "photo_url",
-                  "in_stock", "is_hidden", "sort_order"]
+        fields = [
+            "id", "category", "name_ru", "name_uz", "description_ru",
+            "description_uz", "price", "unit", "photo_url",
+            "in_stock", "is_hidden", "sort_order",
+            # extended talablar-style fields
+            "has_discount", "discount_price",
+            "packaging", "manufacturer", "brand", "model",
+            "barcode", "ikpu",
+            "weight_kg", "length_cm", "width_cm", "height_cm",
+            "seasonality", "images",
+        ]
 
 
 class PublicProductSerializer(serializers.ModelSerializer):

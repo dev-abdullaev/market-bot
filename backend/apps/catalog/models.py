@@ -39,6 +39,24 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # ── talablar-style extended fields ────────────────────────────────────────
+    has_discount = models.BooleanField(default=False)
+    discount_price = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True
+    )
+    packaging = models.CharField(max_length=64, blank=True)
+    manufacturer = models.CharField(max_length=128, blank=True)
+    brand = models.CharField(max_length=128, blank=True)
+    model = models.CharField(max_length=128, blank=True)
+    barcode = models.CharField(max_length=64, blank=True)
+    ikpu = models.CharField(max_length=64, blank=True)
+    weight_kg = models.DecimalField(max_digits=8, decimal_places=3, default=0)
+    length_cm = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    width_cm = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    height_cm = models.DecimalField(max_digits=8, decimal_places=2, default=0)
+    seasonality = models.CharField(max_length=24, default="all_season")
+    images = models.JSONField(default=list, blank=True)
+
     class Meta:
         ordering = ["sort_order", "id"]
 
