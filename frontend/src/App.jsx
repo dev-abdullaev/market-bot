@@ -6,6 +6,7 @@ import Panel from "./pages/Panel";
 import Dashboard from "./pages/panel/Dashboard";
 import OrdersPage from "./pages/panel/OrdersPage";
 import ProductsPage from "./pages/panel/ProductsPage";
+import MenuConstructor from "./pages/panel/MenuConstructor";
 import CategoriesPage from "./pages/panel/CategoriesPage";
 import ClientsPage from "./pages/panel/ClientsPage";
 import BroadcastPage from "./pages/panel/BroadcastPage";
@@ -43,6 +44,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="products" element={<ProductsPage />} />
+          <Route path="menu" element={<MenuConstructor />} />
           <Route path="categories" element={<CategoriesPage />} />
           <Route path="clients" element={<ClientsPage />} />
           <Route path="broadcast" element={<BroadcastPage />} />

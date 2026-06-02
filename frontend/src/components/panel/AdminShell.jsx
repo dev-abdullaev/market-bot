@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   LayoutDashboard,
+  LayoutTemplate,
   Receipt,
   Package,
   Tags,
@@ -24,6 +25,7 @@ const NAV = [
   { to: "/panel", end: true, icon: LayoutDashboard, key: "nav_analytics" },
   { to: "/panel/orders", icon: Receipt, key: "nav_orders" },
   { to: "/panel/products", icon: Package, key: "nav_products" },
+  { to: "/panel/menu", icon: LayoutTemplate, key: "nav_menu" },
   { to: "/panel/categories", icon: Tags, key: "nav_categories" },
   { to: "/panel/clients", icon: Users, key: "nav_clients" },
   { to: "/panel/broadcast", icon: Megaphone, key: "nav_broadcast" },
