@@ -1,3 +1,4 @@
+from django.db import transaction
 from rest_framework import serializers
 from apps.catalog.models import Product
 from .models import Order, OrderItem
@@ -34,25 +35,25 @@ class OrderCreateSerializer(serializers.Serializer):
     longitude = serializers.DecimalField(max_digits=10, decimal_places=7, required=False, allow_null=True)
     comment = serializers.CharField(required=False, allow_blank=True)
     telegram_id = serializers.CharField(required=False, allow_blank=True)
-    items = OrderItemInput(many=True)
+    items = OrderItemInput(many=True, allow_empty=False)
 
     def create(self, validated):
         items = validated.pop("items")
         store_id = validated.pop("store")
         validated.pop("telegram_id", None)
-        order = Order.objects.create(store_id=store_id, **validated)
-        total = 0
-        for it in items:
-            product = Product.objects.filter(id=it["product"], store_id=store_id).first()
-            if not product:
-                order.delete()
-                raise serializers.ValidationError("Product not in this store")
-            line = product.price * it["quantity"]
-            OrderItem.objects.create(order=order, product=product,
-                                     product_name=product.name_uz or product.name_ru,
-                                     price=product.price, quantity=it["quantity"],
-                                     line_total=line)
-            total += line
-        order.total_amount = total
-        order.save(update_fields=["total_amount"])
+        with transaction.atomic():
+            order = Order.objects.create(store_id=store_id, **validated)
+            total = 0
+            for it in items:
+                product = Product.objects.filter(id=it["product"], store_id=store_id).first()
+                if not product:
+                    raise serializers.ValidationError("Product not in this store")
+                line = product.price * it["quantity"]
+                OrderItem.objects.create(order=order, product=product,
+                                         product_name=product.name_uz or product.name_ru,
+                                         price=product.price, quantity=it["quantity"],
+                                         line_total=line)
+                total += line
+            order.total_amount = total
+            order.save(update_fields=["total_amount"])
         return order

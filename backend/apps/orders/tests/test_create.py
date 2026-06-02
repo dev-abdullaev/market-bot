@@ -3,7 +3,7 @@ from decimal import Decimal
 from rest_framework.test import APIClient
 from apps.stores.models import Store
 from apps.catalog.models import Product
-from apps.orders.models import Order
+from apps.orders.models import Order, OrderItem
 
 pytestmark = pytest.mark.django_db
 
@@ -33,3 +33,38 @@ def test_create_order_rejects_foreign_product():
                "items": [{"product": foreign.id, "quantity": 1}]}
     r = APIClient().post("/api/orders", payload, format="json")
     assert r.status_code == 400
+
+
+def test_create_order_foreign_product_in_middle_rolls_back_fully():
+    """Fix 1: atomic rollback — partial items must not persist when 2nd item is foreign."""
+    store = Store.objects.create(name="S", phone="1")
+    other = Store.objects.create(name="O", phone="2")
+    p1 = Product.objects.create(store=store, name_ru="a", name_uz="a", price=Decimal("1000"))
+    foreign = Product.objects.create(store=other, name_ru="x", name_uz="x", price=Decimal("500"))
+    p3 = Product.objects.create(store=store, name_ru="c", name_uz="c", price=Decimal("2000"))
+    payload = {
+        "store": store.id,
+        "customer_name": "Ali", "customer_phone": "998900000001",
+        "items": [
+            {"product": p1.id, "quantity": 1},
+            {"product": foreign.id, "quantity": 1},   # ← bad item, position 2
+            {"product": p3.id, "quantity": 1},
+        ],
+    }
+    r = APIClient().post("/api/orders", payload, format="json")
+    assert r.status_code == 400
+    assert Order.objects.count() == 0
+    assert OrderItem.objects.count() == 0
+
+
+def test_create_order_rejects_empty_items():
+    """Fix 2: empty items list must be rejected with 400, leaving no DB rows."""
+    store = Store.objects.create(name="S", phone="1")
+    payload = {
+        "store": store.id,
+        "customer_name": "Ali", "customer_phone": "998900000002",
+        "items": [],
+    }
+    r = APIClient().post("/api/orders", payload, format="json")
+    assert r.status_code == 400
+    assert Order.objects.count() == 0
