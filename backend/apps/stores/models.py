@@ -17,6 +17,41 @@ class Store(models.Model):
     is_delivery_enabled = models.BooleanField(default=True)
     is_pickup_enabled = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
+    # working hours
+    support_username = models.CharField(max_length=64, blank=True)
+    open_time = models.CharField(max_length=5, blank=True)      # "HH:MM"
+    close_time = models.CharField(max_length=5, blank=True)
+    timezone = models.CharField(max_length=64, default="Asia/Tashkent")
+    service_fee = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    minimum_order_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    # delivery
+    delivery_pricing_mode = models.CharField(max_length=8, default="dynamic")  # dynamic|fixed
+    delivery_base_radius = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+    delivery_base_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    delivery_price_per_km = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    delivery_fixed_price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    # payments
+    cash_enabled = models.BooleanField(default=True)
+    card_enabled = models.BooleanField(default=False)
+    card_payment_title = models.CharField(max_length=128, blank=True)
+    card_number = models.CharField(max_length=32, blank=True)
+    card_holder = models.CharField(max_length=128, blank=True)
+    payme_enabled = models.BooleanField(default=False)
+    payme_merchant_id = models.CharField(max_length=64, blank=True)
+    payme_url = models.CharField(max_length=256, blank=True)
+    click_url = models.CharField(max_length=256, blank=True)
+    uzum_url = models.CharField(max_length=256, blank=True)
+    # bot order-status message templates
+    msg_new = models.TextField(blank=True)
+    msg_preparing = models.TextField(blank=True)
+    msg_delivering = models.TextField(blank=True)
+    msg_delivered = models.TextField(blank=True)
+    msg_cancelled = models.TextField(blank=True)
+    # UI
+    ui_theme = models.CharField(max_length=16, default="classic")
+    ui_primary_color = models.CharField(max_length=16, blank=True)
+    ui_font_family = models.CharField(max_length=16, default="sans")
+    menu_view_mode = models.CharField(max_length=24, default="grid_categories")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
