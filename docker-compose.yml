@@ -5,7 +5,38 @@ services:
       POSTGRES_DB: marketbot
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports: ["5432:5432"]
+    ports: ["5434:5432"]
     volumes: ["pgdata:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d marketbot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  backend:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_NAME: ${DB_NAME:-marketbot}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_HOST: db
+      DB_PORT: 5432
+      SECRET_KEY: ${SECRET_KEY:-dev-insecure-key-change-in-prod}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-*}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      DEBUG: ${DEBUG:-1}
+    ports: ["8000:8000"]
+    volumes:
+      - ./backend:/app
+      - media_files:/app/media
+    # Override CMD for live-reload in dev; the image default is gunicorn.
+    # Uncomment the next line for development:
+    # command: python manage.py runserver 0.0.0.0:8000
+
 volumes:
   pgdata:
+  media_files:
