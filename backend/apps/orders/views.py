@@ -12,6 +12,7 @@ from rest_framework.generics import ListAPIView
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from apps.accounts.models import User
+from apps.catalog.permissions import IsOperatorWithStore
 from apps.notifications.telegram import send_message
 from apps.notifications.broadcast import broadcast_to_customers
 from .models import Order, OrderItem
@@ -88,7 +89,7 @@ class BotOrderStatusView(APIView):
 
 
 class StatsView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsOperatorWithStore]
 
     def get(self, request):
         store = request.user.store
@@ -122,7 +123,7 @@ class StatsView(APIView):
 
 
 class ClientsView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsOperatorWithStore]
 
     def get(self, request):
         store = request.user.store
@@ -144,7 +145,7 @@ class ClientsView(APIView):
 
 
 class BroadcastView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsOperatorWithStore]
 
     def post(self, request):
         store = request.user.store
