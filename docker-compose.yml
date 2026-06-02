@@ -50,6 +50,12 @@ services:
       WEBAPP_URL: ${FRONTEND_WEBAPP_URL:-https://example.com}
     restart: unless-stopped
 
+  frontend:
+    build: ./frontend
+    depends_on: [backend]
+    ports: ["8080:80"]
+    restart: unless-stopped
+
 volumes:
   pgdata:
   media_files:
