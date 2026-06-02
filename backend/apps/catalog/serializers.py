@@ -25,6 +25,7 @@ class PublicStoreSerializer(serializers.ModelSerializer):
             "currency_code",
             "is_delivery_enabled",
             "is_pickup_enabled",
+            "showcase_config",
         ]
 
 
