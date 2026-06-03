@@ -114,49 +114,103 @@ def import_products(store, rows):
     return {"created": created, "skipped": skipped, "errors": errors}
 
 
-def add_global_products_to_store(store, ids):
-    """Copy GlobalProduct rows (by id list) into a store's own product catalog.
+def seed_store_categories(store):
+    """Seed a store's category tree from the shared global_categories.json fixture.
 
-    Idempotent: when a non-empty barcode already exists in the store, the
-    product is skipped.  The category chain from ``category_path`` is resolved
-    (or created) per-store.
+    Idempotent (get_or_create). Creates root + child categories (2 levels).
+    Returns the number of categories created.
+    """
+    from pathlib import Path
+    import json
+
+    data_path = Path(__file__).resolve().parent / "data" / "global_categories.json"
+    cats = json.loads(data_path.read_text(encoding="utf-8"))
+    created = 0
+    for root in cats:
+        root_name_uz = (root.get("name_uz") or "").strip()
+        root_name_ru = (root.get("name_ru") or root_name_uz).strip()
+        if not root_name_uz:
+            continue
+        existed = Category.objects.filter(store=store, parent=None, name_uz=root_name_uz).exists()
+        root_obj = _get_or_create_category_bilingual(
+            store=store, name_uz=root_name_uz, name_ru=root_name_ru, parent=None
+        )
+        created += 0 if existed else 1
+        for child in root.get("children", []):
+            child_uz = (child.get("name_uz") or "").strip()
+            child_ru = (child.get("name_ru") or child_uz).strip()
+            if not child_uz:
+                continue
+            _, cc = Category.objects.get_or_create(
+                store=store, parent=root_obj, name_uz=child_uz,
+                defaults={"name_ru": child_ru, "is_active": True},
+            )
+            created += int(cc)
+    return created
+
+
+def add_global_products_to_store(store, items):
+    """Copy GlobalProduct rows into a store's own product catalog.
+
+    ``items`` is a list of dicts: ``[{id, price, category_id?}, ...]``
+    (backwards-compat: also accepts a plain list of int ids).
+
+    Idempotent by barcode; uses the caller-supplied price and category_id
+    (falling back to category_path when category_id is absent).
 
     Returns: {"created": int, "skipped": int}
     """
+    # Normalise: accept both [{id, price, category_id}] and [id, id, ...]
+    if items and isinstance(items[0], int):
+        items = [{"id": i, "price": Decimal("0"), "category_id": None} for i in items]
+
+    id_to_meta = {int(item["id"]): item for item in items}
+    global_products = GlobalProduct.objects.filter(id__in=id_to_meta.keys())
+
     created_count = 0
     skipped_count = 0
 
-    global_products = GlobalProduct.objects.filter(id__in=ids)
-
     with transaction.atomic():
         for gp in global_products:
+            meta = id_to_meta.get(gp.id, {})
             # Idempotency: skip when barcode already present in store
             if gp.barcode and store.products.filter(barcode=gp.barcode).exists():
                 skipped_count += 1
                 continue
 
-            # Resolve category chain (root → leaf) from category_path
-            category = None
-            for node in (gp.category_path or []):
-                node_uz = (node.get("name_uz") or "").strip()
-                node_ru = (node.get("name_ru") or "").strip()
-                if not node_uz and not node_ru:
-                    continue
-                category = _get_or_create_category_bilingual(
-                    store=store,
-                    name_uz=node_uz or node_ru,
-                    name_ru=node_ru or node_uz,
-                    parent=category,
-                )
+            # Category: use caller-supplied category_id if provided, else derive
+            # from the global product's category_path.
+            cat_id = meta.get("category_id")
+            if cat_id:
+                try:
+                    category = Category.objects.get(id=cat_id, store=store)
+                except Category.DoesNotExist:
+                    category = None
+            else:
+                category = None
+                for node in (gp.category_path or []):
+                    node_uz = (node.get("name_uz") or "").strip()
+                    node_ru = (node.get("name_ru") or "").strip()
+                    if not node_uz and not node_ru:
+                        continue
+                    category = _get_or_create_category_bilingual(
+                        store=store,
+                        name_uz=node_uz or node_ru,
+                        name_ru=node_ru or node_uz,
+                        parent=category,
+                    )
+
+            try:
+                price = Decimal(str(meta.get("price") or "0"))
+            except Exception:
+                price = Decimal("0")
 
             Product.objects.create(
                 store=store,
                 category=category,
                 name_uz=gp.name_uz,
                 name_ru=gp.name_ru,
-                # Price is intentionally left at 0 — the store owner sets their
-                # own selling price after importing from the global catalog.
-                price=Decimal("0"),
+                price=price,
                 unit=gp.unit,
                 barcode=gp.barcode,
                 ikpu=gp.ikpu,

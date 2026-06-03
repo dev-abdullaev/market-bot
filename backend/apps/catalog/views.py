@@ -51,10 +51,11 @@ class GlobalProductAddView(APIView):
     permission_classes = [IsOperatorWithStore]
 
     def post(self, request):
-        ids = request.data.get("ids", [])
-        if not isinstance(ids, list):
-            return Response({"detail": "ids must be a list"}, status=400)
-        result = add_global_products_to_store(store=request.user.store, ids=ids)
+        # Accept {items: [{id, price, category_id?}]} or legacy {ids: [...]}
+        items = request.data.get("items") or request.data.get("ids", [])
+        if not isinstance(items, list):
+            return Response({"detail": "items must be a list"}, status=400)
+        result = add_global_products_to_store(store=request.user.store, items=items)
         return Response(result, status=200)
 
 

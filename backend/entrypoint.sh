@@ -30,4 +30,16 @@ echo "Starting background seeds (seed_global_catalog + seed_demo)..."
 (python manage.py seed_global_catalog && python manage.py seed_demo \
     && echo "[entrypoint] background seeds complete") &
 
+# Auto-create superuser when env vars are set (idempotent).
+if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
+    python manage.py shell -c "
+from django.contrib.auth import get_user_model; U = get_user_model()
+if not U.objects.filter(username='$DJANGO_SUPERUSER_USERNAME').exists():
+    U.objects.create_superuser(username='$DJANGO_SUPERUSER_USERNAME', password='$DJANGO_SUPERUSER_PASSWORD', phone='$DJANGO_SUPERUSER_USERNAME')
+    print('[entrypoint] superuser created.')
+else:
+    print('[entrypoint] superuser already exists.')
+" || true
+fi
+
 exec "$@"

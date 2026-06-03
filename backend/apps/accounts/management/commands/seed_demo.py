@@ -1,11 +1,11 @@
 """Management command: seed_demo
 
-Creates a demo operator user and a linked demo store for quick first-login.
-Idempotent — safe to run on every deploy (uses get_or_create throughout).
+Creates a demo operator user, linked demo store, and seeds the store's
+category tree from global_categories.json. Idempotent.
 
     python manage.py seed_demo
 
-Credentials created:
+Credentials:
     username / phone : 998901112233
     password         : demo123
     role             : operator
@@ -14,6 +14,7 @@ Credentials created:
 from django.core.management.base import BaseCommand
 
 from apps.accounts.models import User
+from apps.catalog.services import seed_store_categories
 from apps.stores.models import Store
 
 DEMO_USERNAME = "998901112233"
@@ -23,23 +24,22 @@ DEMO_STORE_NAME = "Demo do'kon"
 
 
 class Command(BaseCommand):
-    help = "Seed a demo operator user and store (idempotent)."
+    help = "Seed a demo operator user, store, and store categories (idempotent)."
 
     def handle(self, *args, **options):
-        # 1. Create or fetch the demo store with the exact slug.
+        # 1. Store
         store, store_created = Store.objects.get_or_create(
             slug=DEMO_STORE_SLUG,
-            defaults={
-                "name": DEMO_STORE_NAME,
-                "is_active": True,
-            },
+            defaults={"name": DEMO_STORE_NAME, "is_active": True},
         )
         if store_created:
-            self.stdout.write(self.style.SUCCESS(f"[seed_demo] Store '{DEMO_STORE_NAME}' created (slug={DEMO_STORE_SLUG})."))
+            self.stdout.write(self.style.SUCCESS(
+                f"[seed_demo] Store '{DEMO_STORE_NAME}' created."
+            ))
         else:
-            self.stdout.write(f"[seed_demo] Store '{DEMO_STORE_NAME}' already exists — skipping.")
+            self.stdout.write(f"[seed_demo] Store already exists.")
 
-        # 2. Create or fetch the demo operator user.
+        # 2. Operator user
         user, user_created = User.objects.get_or_create(
             username=DEMO_USERNAME,
             defaults={
@@ -51,26 +51,29 @@ class Command(BaseCommand):
                 "is_staff": False,
             },
         )
-
         if user_created:
             user.set_password(DEMO_PASSWORD)
             user.save(update_fields=["password"])
             self.stdout.write(self.style.SUCCESS(
-                f"[seed_demo] User '{DEMO_USERNAME}' created with role=operator linked to store."
+                f"[seed_demo] User '{DEMO_USERNAME}' created."
             ))
         else:
-            # Ensure the existing user is linked to the store and has the right role.
-            updated_fields = []
+            updated = []
             if user.store_id != store.pk:
-                user.store = store
-                updated_fields.append("store")
+                user.store = store; updated.append("store")
             if user.role != "operator":
-                user.role = "operator"
-                updated_fields.append("role")
-            if updated_fields:
-                user.save(update_fields=updated_fields)
-                self.stdout.write(f"[seed_demo] User '{DEMO_USERNAME}' updated: {updated_fields}.")
-            else:
-                self.stdout.write(f"[seed_demo] User '{DEMO_USERNAME}' already exists — skipping.")
+                user.role = "operator"; updated.append("role")
+            if updated:
+                user.save(update_fields=updated)
+            self.stdout.write(f"[seed_demo] User already exists.")
+
+        # 3. Seed store categories from global_categories.json
+        n = seed_store_categories(store)
+        if n:
+            self.stdout.write(self.style.SUCCESS(
+                f"[seed_demo] {n} store categories created from global catalog."
+            ))
+        else:
+            self.stdout.write(f"[seed_demo] Store categories already seeded.")
 
         self.stdout.write(self.style.SUCCESS("[seed_demo] Done."))

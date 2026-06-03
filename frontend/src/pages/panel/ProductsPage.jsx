@@ -497,6 +497,7 @@ export default function ProductsPage() {
       <GlobalProductPicker
         open={globalOpen}
         onOpenChange={setGlobalOpen}
+        categories={categories}
         onAdded={(msg) => {
           load();
           setToast(msg);
