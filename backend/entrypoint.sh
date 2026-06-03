@@ -15,17 +15,19 @@ fi
 echo "Running migrations..."
 python manage.py migrate --noinput
 
-echo "Seeding global product catalog..."
-python manage.py seed_global_catalog
-
-echo "Seeding demo operator + store..."
-python manage.py seed_demo
-
 echo "Collecting static files..."
 # Non-fatal: in local dev the bind-mounted /app is host-owned and the non-root
 # container user can't write staticfiles/ (PermissionError). On a real host
 # (Render — no bind mount, appuser owns /app) this succeeds. Either way, never
 # block boot on it.
 python manage.py collectstatic --noinput || echo "[entrypoint] collectstatic skipped"
+
+# Run idempotent seeds in the background so gunicorn can start (and pass the
+# health check) immediately. On a fresh Neon DB the 961-row global catalog seed
+# can take 2-4 min over SSL — blocking on it caused Render health-check timeouts.
+# Both commands are fully idempotent; a restart before they finish is safe.
+echo "Starting background seeds (seed_global_catalog + seed_demo)..."
+(python manage.py seed_global_catalog && python manage.py seed_demo \
+    && echo "[entrypoint] background seeds complete") &
 
 exec "$@"
