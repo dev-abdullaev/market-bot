@@ -23,7 +23,7 @@ function useScaled(length, width, height) {
     const empty = L === 0 && W === 0 && H === 0;
 
     const max = Math.max(L, W, H, 1);
-    const TARGET = 1.6; // largest edge length in scene units
+    const TARGET = 2.1; // largest edge length in scene units
     const FLOOR = 0.45; // smallest edge so nothing disappears
     const norm = (v) => (empty ? 1 : Math.max(FLOOR, (v / max) * TARGET));
 
@@ -43,7 +43,7 @@ function useScaled(length, width, height) {
 /** Small colour-coded pill rendered in screen space next to an edge. */
 function AxisLabel({ position, color, label, value }) {
   return (
-    <Html position={position} center distanceFactor={6} zIndexRange={[10, 0]}>
+    <Html position={position} center zIndexRange={[10, 0]}>
       <div
         style={{
           display: "flex",
@@ -154,11 +154,11 @@ export default function DimensionsBox3D({ length, width, height }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="relative h-48 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-muted to-primary/5 shadow-soft">
+      <div className="relative h-72 overflow-hidden rounded-2xl border border-border bg-gradient-to-br from-muted to-primary/5 shadow-soft">
         <Canvas
           className="cursor-grab active:cursor-grabbing"
           dpr={[1, 2]}
-          camera={{ position: [2.6, 2.0, 3.0], fov: 42 }}
+          camera={{ position: [3.1, 2.4, 3.6], fov: 40 }}
           gl={{ alpha: true, antialias: true }}
           style={{ background: "transparent" }}
         >
