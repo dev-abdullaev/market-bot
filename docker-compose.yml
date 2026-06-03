@@ -45,7 +45,7 @@ services:
       - backend
     environment:
       BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
-      BACKEND_API_URL: http://backend:8000/api
+      BACKEND_API_URL: ${BACKEND_API_URL:-http://backend:8000/api}
       BOT_SHARED_SECRET: ${BOT_SHARED_SECRET:-changeme}
       WEBAPP_URL: ${FRONTEND_WEBAPP_URL:-https://example.com}
     restart: unless-stopped
@@ -53,7 +53,7 @@ services:
   frontend:
     build: ./frontend
     depends_on: [backend]
-    ports: ["8080:80"]
+    ports: ["8070:80"]
     restart: unless-stopped
 
 volumes:
