@@ -9,7 +9,7 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     plan: free
-    healthCheckPath: /api/auth/me   # Returns 401 (unauthenticated) = service is up
+    healthCheckPath: /admin/         # Returns 302→/admin/login/ (3xx = healthy per Render docs)
 
     envVars:
       - key: SECRET_KEY
