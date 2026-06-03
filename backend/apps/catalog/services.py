@@ -5,7 +5,9 @@ Business logic is kept here so views stay thin.
 """
 from decimal import Decimal, InvalidOperation
 
-from .models import Category, Product
+from django.db import transaction
+
+from .models import Category, GlobalProduct, Product
 
 
 def _get_or_create_category(store, name, parent):
@@ -16,6 +18,19 @@ def _get_or_create_category(store, name, parent):
         parent=parent,
         name_uz=name,
         defaults={"name_ru": name, "is_active": True},
+    )
+    return obj
+
+
+def _get_or_create_category_bilingual(store, name_uz, name_ru, parent):
+    """Variant of _get_or_create_category that accepts distinct uz/ru names."""
+    name_uz = name_uz.strip()
+    name_ru = (name_ru or name_uz).strip()
+    obj, _ = Category.objects.get_or_create(
+        store=store,
+        parent=parent,
+        name_uz=name_uz,
+        defaults={"name_ru": name_ru, "is_active": True},
     )
     return obj
 
@@ -97,3 +112,64 @@ def import_products(store, rows):
             errors.append(f"Row {idx}: {exc}")
 
     return {"created": created, "skipped": skipped, "errors": errors}
+
+
+def add_global_products_to_store(store, ids):
+    """Copy GlobalProduct rows (by id list) into a store's own product catalog.
+
+    Idempotent: when a non-empty barcode already exists in the store, the
+    product is skipped.  The category chain from ``category_path`` is resolved
+    (or created) per-store.
+
+    Returns: {"created": int, "skipped": int}
+    """
+    created_count = 0
+    skipped_count = 0
+
+    global_products = GlobalProduct.objects.filter(id__in=ids)
+
+    with transaction.atomic():
+        for gp in global_products:
+            # Idempotency: skip when barcode already present in store
+            if gp.barcode and store.products.filter(barcode=gp.barcode).exists():
+                skipped_count += 1
+                continue
+
+            # Resolve category chain (root → leaf) from category_path
+            category = None
+            for node in (gp.category_path or []):
+                node_uz = (node.get("name_uz") or "").strip()
+                node_ru = (node.get("name_ru") or "").strip()
+                if not node_uz and not node_ru:
+                    continue
+                category = _get_or_create_category_bilingual(
+                    store=store,
+                    name_uz=node_uz or node_ru,
+                    name_ru=node_ru or node_uz,
+                    parent=category,
+                )
+
+            Product.objects.create(
+                store=store,
+                category=category,
+                name_uz=gp.name_uz,
+                name_ru=gp.name_ru,
+                price=gp.price,
+                unit=gp.unit,
+                barcode=gp.barcode,
+                ikpu=gp.ikpu,
+                brand=gp.brand,
+                model=gp.model,
+                manufacturer=gp.manufacturer,
+                weight_kg=gp.weight_kg,
+                length_cm=gp.length_cm,
+                width_cm=gp.width_cm,
+                height_cm=gp.height_cm,
+                photo_url=gp.image_url or "",
+                images=[gp.image_url] if gp.image_url else [],
+                has_discount=bool(gp.discount_price),
+                discount_price=gp.discount_price,
+            )
+            created_count += 1
+
+    return {"created": created_count, "skipped": skipped_count}

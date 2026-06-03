@@ -1,0 +1,1898 @@
+[
+ {
+  "name_uz": "Fast food",
+  "name_ru": "Fast food",
+  "children": [
+   {
+    "name_uz": "Burger va Hot-doglar",
+    "name_ru": "Бургеры и Хот-доги"
+   },
+   {
+    "name_uz": "Shirinliklar",
+    "name_ru": "Десерты"
+   },
+   {
+    "name_uz": "Donarlar & Sendwich",
+    "name_ru": "Донеры & Сендвичи"
+   },
+   {
+    "name_uz": "Lavashlar",
+    "name_ru": "Лаваш"
+   },
+   {
+    "name_uz": "Ichimliklar",
+    "name_ru": "Напитки"
+   },
+   {
+    "name_uz": "Pizza",
+    "name_ru": "Пица"
+   },
+   {
+    "name_uz": "Salatlar",
+    "name_ru": "Салаты"
+   },
+   {
+    "name_uz": "Fri & Souslar",
+    "name_ru": "Фри & Соусы"
+   }
+  ]
+ },
+ {
+  "name_uz": "QAZI №1",
+  "name_ru": "QAZI №1",
+  "children": [
+   {
+    "name_uz": "Murabbolar",
+    "name_ru": "Варении"
+   },
+   {
+    "name_uz": "Qazi assortimenti",
+    "name_ru": "Казы ассортимент"
+   },
+   {
+    "name_uz": "Kalbosa & Sosiskalar",
+    "name_ru": "Колбоса & Сосиски"
+   },
+   {
+    "name_uz": "Sut mahsulotlari",
+    "name_ru": "Малочные продукты"
+   },
+   {
+    "name_uz": "Noyob maxsulotlar",
+    "name_ru": "Необычные товары"
+   },
+   {
+    "name_uz": "Yarim tayyor mahsulotlar",
+    "name_ru": "Полуфабрикаты"
+   },
+   {
+    "name_uz": "Rulet assortimenti",
+    "name_ru": "Рулет ассортименты"
+   },
+   {
+    "name_uz": "Tushonkalar",
+    "name_ru": "Тушёнки"
+   }
+  ]
+ },
+ {
+  "name_uz": "Avtotovarlar",
+  "name_ru": "Автотовары",
+  "children": [
+   {
+    "name_uz": "Avto ehtiyot qismlar",
+    "name_ru": "Автозапчасти"
+   },
+   {
+    "name_uz": "Avto audio",
+    "name_ru": "Автозвук"
+   },
+   {
+    "name_uz": "Akkumulyatorlar",
+    "name_ru": "Аккумуляторы"
+   },
+   {
+    "name_uz": "Aksessuarlar va jihozlar",
+    "name_ru": "Аксессуары и принадлежности"
+   },
+   {
+    "name_uz": "Benzin",
+    "name_ru": "Бензиновые"
+   },
+   {
+    "name_uz": "Garaj va avtoservis",
+    "name_ru": "Гараж и автосервис"
+   },
+   {
+    "name_uz": "Asbob-uskunalar",
+    "name_ru": "Инструменты и оборудование"
+   },
+   {
+    "name_uz": "Yog‘lar va avtomobil kimyosi",
+    "name_ru": "Масла и автохимия"
+   },
+   {
+    "name_uz": "Moto texnika buyumlari, moto jihozlari",
+    "name_ru": "Товары для мототехники, мотоэкипировка"
+   },
+   {
+    "name_uz": "Transport vositalari",
+    "name_ru": "Транспортные средства"
+   },
+   {
+    "name_uz": "Avtomobilga xizmat ko‘rsatish",
+    "name_ru": "Уход за автомобилем"
+   },
+   {
+    "name_uz": "Shinalar va disklari",
+    "name_ru": "Шины и диски"
+   },
+   {
+    "name_uz": "Electromobil",
+    "name_ru": "Электрички"
+   },
+   {
+    "name_uz": "Avto elektronika",
+    "name_ru": "Электроника для авто"
+   }
+  ]
+ },
+ {
+  "name_uz": "Aksessuarlar",
+  "name_ru": "Аксессуары",
+  "children": [
+   {
+    "name_uz": "Qizlar uchun aksessuarlar",
+    "name_ru": "Аксессуары для девочек"
+   },
+   {
+    "name_uz": "O‘g‘il bolalar uchun aksessuarlar",
+    "name_ru": "Аксессуары для мальчиков"
+   },
+   {
+    "name_uz": "Sayohat aksessuarlar",
+    "name_ru": "Аксессуары для путешествий"
+   },
+   {
+    "name_uz": "Qorli chang‘i aksessuarlar",
+    "name_ru": "Горнолыжные аксессуары"
+   },
+   {
+    "name_uz": "Ayollar aksessuarlari",
+    "name_ru": "Женские аксессуары"
+   },
+   {
+    "name_uz": "Erkaklar aksessuarlari",
+    "name_ru": "Мужские аксессуары"
+   }
+  ]
+ },
+ {
+  "name_uz": "Aksiya",
+  "name_ru": "Акции",
+  "children": [
+   {
+    "name_uz": ".",
+    "name_ru": "."
+   }
+  ]
+ },
+ {
+  "name_uz": "Maishiy texnika",
+  "name_ru": "Бытовая техника",
+  "children": [
+   {
+    "name_uz": "Iqlim texnikasi",
+    "name_ru": "Климатическая техника"
+   },
+   {
+    "name_uz": "Katta uy texnikasi",
+    "name_ru": "Крупная бытовая техника"
+   },
+   {
+    "name_uz": "Sanoat tikuv mashinasi",
+    "name_ru": "Промышленная швейная машина"
+   },
+   {
+    "name_uz": "Uy texnikasi uchun boshqa aksessuarlar va ehtiyot qismlar",
+    "name_ru": "Прочие аксессуары и запчасти для бытовой техники"
+   },
+   {
+    "name_uz": "Uy texnikasi",
+    "name_ru": "Техника для дома"
+   },
+   {
+    "name_uz": "Go‘zallik texnikasi",
+    "name_ru": "Техника для красоты"
+   },
+   {
+    "name_uz": "Oshxona texnikasi",
+    "name_ru": "Техника для кухни"
+   },
+   {
+    "name_uz": "Tikuv mashinasi",
+    "name_ru": "Швейные машины"
+   }
+  ]
+ },
+ {
+  "name_uz": "Uy kimyosi",
+  "name_ru": "Бытовая химия",
+  "children": [
+   {
+    "name_uz": "Qog‘oz mahsulotlari",
+    "name_ru": "Бумажная продукция"
+   },
+   {
+    "name_uz": "Havo tozalagichlar va hid neytrallash vositalari",
+    "name_ru": "Освежители и нейтрализаторы"
+   },
+   {
+    "name_uz": "Idish yuvish mashinalari uchun vositalar",
+    "name_ru": "Средства для посудомоечных машин"
+   },
+   {
+    "name_uz": "Kir yuvish vositalari",
+    "name_ru": "Средства для стирки"
+   },
+   {
+    "name_uz": "Uy texnikasiga xizmat ko‘rsatish vositalari",
+    "name_ru": "Средства для ухода за бытовой техникой"
+   },
+   {
+    "name_uz": "Hasharotlar va kemiruvchilar uchun vositalar",
+    "name_ru": "Средства от насекомых и грызунов"
+   },
+   {
+    "name_uz": "Oyoq kiyim parvarishi vositalari",
+    "name_ru": "Средства по уходу за обувью"
+   },
+   {
+    "name_uz": "Tozalash va yuvish vositalari",
+    "name_ru": "Чистящие и моющие средства"
+   }
+  ]
+ },
+ {
+  "name_uz": "Dacha, bog‘ va bog‘dorchilik",
+  "name_ru": "Дача, сад и огород",
+  "children": [
+   {
+    "name_uz": "Havuzlar va aksessuarlar",
+    "name_ru": "Бассейны и аксессуары"
+   },
+   {
+    "name_uz": "Xonadagi o‘simliklar va gullar",
+    "name_ru": "Комнатные растения и цветы"
+   },
+   {
+    "name_uz": "Dacha va bog‘ni jihozlash",
+    "name_ru": "Обустройство дачи и сада"
+   },
+   {
+    "name_uz": "Hayvonlar va hasharotlarni haydash vositalari",
+    "name_ru": "Отпугиватели животных и насекомых"
+   },
+   {
+    "name_uz": "Piknik, barbecue, grill",
+    "name_ru": "Пикник, барбекю, гриль"
+   },
+   {
+    "name_uz": "Bog‘ mebellari",
+    "name_ru": "Садовая мебель"
+   },
+   {
+    "name_uz": "Bog‘ texnikasi",
+    "name_ru": "Садовая техника"
+   },
+   {
+    "name_uz": "Bog‘ asboblari",
+    "name_ru": "Садовый инструмент"
+   },
+   {
+    "name_uz": "Ko‘chatlar va urug‘liklar",
+    "name_ru": "Саженцы и рассада"
+   },
+   {
+    "name_uz": "Urug‘lar",
+    "name_ru": "Семена"
+   },
+   {
+    "name_uz": "Qor tozalash",
+    "name_ru": "Уборка снега"
+   },
+   {
+    "name_uz": "O‘simliklarga g‘amxo‘rlik qilish",
+    "name_ru": "Уход за растениями"
+   }
+  ]
+ },
+ {
+  "name_uz": "Bolalar uchun",
+  "name_ru": "Детские товары",
+  "children": [
+   {
+    "name_uz": "Bolalar xonasi",
+    "name_ru": "Детская комната"
+   },
+   {
+    "name_uz": "Bolalar sporti",
+    "name_ru": "Детский спорт"
+   },
+   {
+    "name_uz": "Bolalar ovqati",
+    "name_ru": "Детское питание"
+   },
+   {
+    "name_uz": "Bolalar ijodi",
+    "name_ru": "Детское творчество"
+   },
+   {
+    "name_uz": "Ovqatlantirish buyumlari",
+    "name_ru": "Для кормления"
+   },
+   {
+    "name_uz": "Onalar uchun",
+    "name_ru": "Для мам"
+   },
+   {
+    "name_uz": "O‘yinchoqlar",
+    "name_ru": "Игрушки"
+   },
+   {
+    "name_uz": "Bolalar aravachalari",
+    "name_ru": "Коляски"
+   },
+   {
+    "name_uz": "Tagliklar",
+    "name_ru": "Подгузники"
+   }
+  ]
+ },
+ {
+  "name_uz": "Bolalar bo'limi",
+  "name_ru": "Детский раздел",
+  "children": [
+   {
+    "name_uz": "Parvarish",
+    "name_ru": "Уход"
+   }
+  ]
+ },
+ {
+  "name_uz": "Bolalar bo'limi",
+  "name_ru": "Детский раздел",
+  "children": [
+   {
+    "name_uz": "O'yinchoqlari",
+    "name_ru": "Игрушки"
+   },
+   {
+    "name_uz": "Kitoblar",
+    "name_ru": "Книжки"
+   },
+   {
+    "name_uz": "Kiyimlar qiz bola",
+    "name_ru": "Одежда девочка"
+   },
+   {
+    "name_uz": "Kiyimlar o'gil bola",
+    "name_ru": "Одежды мальчик"
+   },
+   {
+    "name_uz": "Oziq ovqat",
+    "name_ru": "Питание"
+   },
+   {
+    "name_uz": "Parvarish",
+    "name_ru": "Уход"
+   }
+  ]
+ },
+ {
+  "name_uz": "Bolalar bo'limi",
+  "name_ru": "Детский раздел",
+  "children": [
+   {
+    "name_uz": "Parvarish",
+    "name_ru": "Уход"
+   }
+  ]
+ },
+ {
+  "name_uz": "Bolalar bo'limi",
+  "name_ru": "Детский раздел",
+  "children": [
+   {
+    "name_uz": "Parvarish",
+    "name_ru": "Уход"
+   }
+  ]
+ },
+ {
+  "name_uz": "Uy hayvonlari",
+  "name_ru": "Домашние животные",
+  "children": [
+   {
+    "name_uz": "Qo'ylar",
+    "name_ru": "Бараны"
+   },
+   {
+    "name_uz": "Parrandalar",
+    "name_ru": "Домашняя птица"
+   },
+   {
+    "name_uz": "Boshqa hayvonlar",
+    "name_ru": "Дригие животные"
+   },
+   {
+    "name_uz": "Baliqlar",
+    "name_ru": "Рыбы"
+   },
+   {
+    "name_uz": "Mollar",
+    "name_ru": "Скоты"
+   }
+  ]
+ },
+ {
+  "name_uz": "Salomatlik",
+  "name_ru": "Здоровье",
+  "children": [
+   {
+    "name_uz": "Vitaminlar va qo‘shimchalar",
+    "name_ru": "Витамины и БАДы"
+   },
+   {
+    "name_uz": "Massaj uskunalari",
+    "name_ru": "Массажеры"
+   },
+   {
+    "name_uz": "Tibbiy buyumlar",
+    "name_ru": "Медицинские изделия"
+   },
+   {
+    "name_uz": "Tibbiy asboblar",
+    "name_ru": "Медицинские приборы"
+   },
+   {
+    "name_uz": "Optika",
+    "name_ru": "Оптика"
+   },
+   {
+    "name_uz": "Ortopedik buyumlar",
+    "name_ru": "Ортопедические изделия"
+   },
+   {
+    "name_uz": "Prezervativlar, lubrikantlar",
+    "name_ru": "Презервативы, лубриканты"
+   },
+   {
+    "name_uz": "Sport oziqlanishi",
+    "name_ru": "Спортивное питание"
+   },
+   {
+    "name_uz": "Reabilitatsiya buyumlari",
+    "name_ru": "Товары для реабилитации"
+   }
+  ]
+ },
+ {
+  "name_uz": "Hayvonlar uchun",
+  "name_ru": "Зоотовары",
+  "children": [
+   {
+    "name_uz": "Gigiena",
+    "name_ru": "Гигиена"
+   },
+   {
+    "name_uz": "Для грызунов",
+    "name_ru": "Для грызунов"
+   },
+   {
+    "name_uz": "Для кошек",
+    "name_ru": "Для кошек"
+   },
+   {
+    "name_uz": "Для птиц",
+    "name_ru": "Для птиц"
+   },
+   {
+    "name_uz": "Для рыб и рептилий",
+    "name_ru": "Для рыб и рептилий"
+   },
+   {
+    "name_uz": "Для сельскохозяйственных животных",
+    "name_ru": "Для сельскохозяйственных животных"
+   },
+   {
+    "name_uz": "Для собак",
+    "name_ru": "Для собак"
+   }
+  ]
+ },
+ {
+  "name_uz": "Suniy gullar",
+  "name_ru": "Искуственные цветы",
+  "children": [
+   {
+    "name_uz": "Oasis",
+    "name_ru": "Oasis"
+   },
+   {
+    "name_uz": "Akvariumlar",
+    "name_ru": "Аквариумы"
+   },
+   {
+    "name_uz": "Katta buketlar",
+    "name_ru": "Букеты большые"
+   },
+   {
+    "name_uz": "Gul qog‘ozlari",
+    "name_ru": "Бумага для цветов"
+   },
+   {
+    "name_uz": "Daraxtlar uchun tuvaklar",
+    "name_ru": "Горшки для деревьев"
+   },
+   {
+    "name_uz": "Tayyor Mini-Gullar",
+    "name_ru": "Готовые Мини-Цветы"
+   },
+   {
+    "name_uz": "Dekorativ zelenlar",
+    "name_ru": "Декоративная зелень"
+   },
+   {
+    "name_uz": "Dekorativ shoxlar",
+    "name_ru": "Декоративные ветки"
+   },
+   {
+    "name_uz": "Dekorativ daraxtlar",
+    "name_ru": "Декоративные деревья"
+   },
+   {
+    "name_uz": "Dekorativ gullar",
+    "name_ru": "Декоративные цветы"
+   },
+   {
+    "name_uz": "Yashil setkalar",
+    "name_ru": "Зеленые сетки"
+   },
+   {
+    "name_uz": "Sun'iy mevalar",
+    "name_ru": "Искуственные Фрукты"
+   },
+   {
+    "name_uz": "Keramik tuvaklar",
+    "name_ru": "Керамические горшки"
+   },
+   {
+    "name_uz": "Keramik buyumlar",
+    "name_ru": "Керамические изделия"
+   },
+   {
+    "name_uz": "Savatlar",
+    "name_ru": "Корзины"
+   },
+   {
+    "name_uz": "Mayda buketlar",
+    "name_ru": "Маленькие букеты"
+   },
+   {
+    "name_uz": "Mayda zelenlar",
+    "name_ru": "Мелкая зелень"
+   },
+   {
+    "name_uz": "Temir vazalar",
+    "name_ru": "Металлические вазы"
+   },
+   {
+    "name_uz": "Mox panellari",
+    "name_ru": "Моховые панели"
+   },
+   {
+    "name_uz": "Sovun gullar",
+    "name_ru": "Мыльные цветы"
+   },
+   {
+    "name_uz": "Paketlar",
+    "name_ru": "Пакеты"
+   },
+   {
+    "name_uz": "Plastik tuvaklar",
+    "name_ru": "Пластиковые горшки"
+   },
+   {
+    "name_uz": "Osma zelenlar",
+    "name_ru": "Подвесные зелени"
+   },
+   {
+    "name_uz": "Osma barglar",
+    "name_ru": "Подвесные листья"
+   },
+   {
+    "name_uz": "Osma Gullar/",
+    "name_ru": "Подвесные цветы/"
+   },
+   {
+    "name_uz": "Premium kashpo va tuvaklar",
+    "name_ru": "Премиальные кашпо и горшки"
+   },
+   {
+    "name_uz": "Premium keramikalar",
+    "name_ru": "Премиум керамика"
+   },
+   {
+    "name_uz": "Ramazon dekorlari",
+    "name_ru": "Рамазан декор"
+   },
+   {
+    "name_uz": "Daraxt tanalari",
+    "name_ru": "Стволы деревьев"
+   },
+   {
+    "name_uz": "Shisha vazalar",
+    "name_ru": "Стеклянные вазы"
+   },
+   {
+    "name_uz": "Dona gullar",
+    "name_ru": "Цветы поштучно"
+   }
+  ]
+ },
+ {
+  "name_uz": "Ofis mollari",
+  "name_ru": "Канцтовары",
+  "children": [
+   {
+    "name_uz": "Qog‘oz mahsulotlari",
+    "name_ru": "Бумажная продукция"
+   },
+   {
+    "name_uz": "Namoyish taxtalari",
+    "name_ru": "Демонстрационные доски"
+   },
+   {
+    "name_uz": "Kalkulyatorlar",
+    "name_ru": "Калькуляторы"
+   },
+   {
+    "name_uz": "Kartrijlar",
+    "name_ru": "Картриджи"
+   },
+   {
+    "name_uz": "Stol usti turadigan aksessuarlar va vizitkalar",
+    "name_ru": "Настольные подставки и визитницы"
+   },
+   {
+    "name_uz": "Savdo uskunalari",
+    "name_ru": "Оборудование для торговли"
+   },
+   {
+    "name_uz": "Ofis buyumlari",
+    "name_ru": "Офисные принадлежности"
+   },
+   {
+    "name_uz": "Papkalar va fayllar",
+    "name_ru": "Папки и файлы"
+   },
+   {
+    "name_uz": "Muhrlar va shtamplar",
+    "name_ru": "Печати и штампы"
+   },
+   {
+    "name_uz": "Yozuv buyumlari",
+    "name_ru": "Письменные принадлежности"
+   },
+   {
+    "name_uz": "Maktab va o‘quv buyumlari",
+    "name_ru": "Товары для школы и обучения"
+   },
+   {
+    "name_uz": "Chizma buyumlari",
+    "name_ru": "Чертежные принадлежности"
+   }
+  ]
+ },
+ {
+  "name_uz": "Klassik asallar",
+  "name_ru": "Кассические мёды",
+  "children": [
+   {
+    "name_uz": ".",
+    "name_ru": "."
+   }
+  ]
+ },
+ {
+  "name_uz": "Kitoblar",
+  "name_ru": "Книги",
+  "children": [
+   {
+    "name_uz": "Biznes adabiyoti",
+    "name_ru": "Бизнес-литература"
+   },
+   {
+    "name_uz": "Bolalar va ota-onalar uchun",
+    "name_ru": "Детям и родителям"
+   },
+   {
+    "name_uz": "Jurnallar, gazetalari",
+    "name_ru": "Журналы, газеты"
+   },
+   {
+    "name_uz": "Chet tillaridagi adabiyot",
+    "name_ru": "Литература на иностранных языках"
+   },
+   {
+    "name_uz": "Manga",
+    "name_ru": "Манга"
+   },
+   {
+    "name_uz": "Badiiy bo‘lmagan adabiyot",
+    "name_ru": "Нехудожественная литература"
+   },
+   {
+    "name_uz": "Sovg‘a nashrlari",
+    "name_ru": "Подарочные издания"
+   },
+   {
+    "name_uz": "Elektron kitoblar va audiokitoblar obunalari",
+    "name_ru": "Подписки на электронные книги и аудиокниги"
+   },
+   {
+    "name_uz": "Diniy kitoblar",
+    "name_ru": "Религиозные книги"
+   },
+   {
+    "name_uz": "O‘quv adabiyoti",
+    "name_ru": "Учебная литература"
+   },
+   {
+    "name_uz": "Badiiy adabiyot",
+    "name_ru": "Художественная литература"
+   }
+  ]
+ },
+ {
+  "name_uz": "Gilamlar",
+  "name_ru": "Ковры",
+  "children": [
+   {
+    "name_uz": "Eron",
+    "name_ru": "Иран"
+   },
+   {
+    "name_uz": "Kovralan",
+    "name_ru": "Ковроланы"
+   },
+   {
+    "name_uz": "Turkiya",
+    "name_ru": "Турция"
+   }
+  ]
+ },
+ {
+  "name_uz": "Go‘zallik va parvarish",
+  "name_ru": "Красота и уход",
+  "children": [
+   {
+    "name_uz": "Aromaterapiya",
+    "name_ru": "Ароматерапия"
+   },
+   {
+    "name_uz": "Go‘zallik sertifikatlari",
+    "name_ru": "Бьюти-сертификаты"
+   },
+   {
+    "name_uz": "Dermakosmetika",
+    "name_ru": "Дермакосметика"
+   },
+   {
+    "name_uz": "Erkaklar uchun",
+    "name_ru": "Для мужчин"
+   },
+   {
+    "name_uz": "Koreys kosmetikasi",
+    "name_ru": "Корейская косметика"
+   },
+   {
+    "name_uz": "Shaxsiy gigiyena",
+    "name_ru": "Личная гигиена"
+   },
+   {
+    "name_uz": "Makiyaj",
+    "name_ru": "Макияж"
+   },
+   {
+    "name_uz": "Manikyur va pedikyur",
+    "name_ru": "Маникюр и педикюр"
+   },
+   {
+    "name_uz": "Go‘zallik salonlari uchun mebel va uskunalar",
+    "name_ru": "Мебель и оборудование для салонов красоты"
+   },
+   {
+    "name_uz": "Tatu-salon uchun uskunalar va materiallar",
+    "name_ru": "Оборудование и материалы для тату-салона"
+   },
+   {
+    "name_uz": "Organayzer",
+    "name_ru": "Органайзер"
+   },
+   {
+    "name_uz": "Parfyumeriya",
+    "name_ru": "Парфюмерия"
+   },
+   {
+    "name_uz": "Professional kosmetika",
+    "name_ru": "Профессиональная косметика"
+   },
+   {
+    "name_uz": "Soch parvarishi",
+    "name_ru": "Уход за волосами"
+   },
+   {
+    "name_uz": "Yuz parvarishi",
+    "name_ru": "Уход за лицом"
+   },
+   {
+    "name_uz": "Tana parvarishi",
+    "name_ru": "Уход за телом"
+   }
+  ]
+ },
+ {
+  "name_uz": "🇹🇯 Мағоза",
+  "name_ru": "🇹🇯 Магазин",
+  "children": [
+   {
+    "name_uz": "Об ва нӯшокиҳо",
+    "name_ru": "Вода и напитки"
+   },
+   {
+    "name_uz": "Хама барои пухтан ва шириниҳо",
+    "name_ru": "Все для выпечки и десертов"
+   },
+   {
+    "name_uz": "Хӯроки тайёр",
+    "name_ru": "Готовая еда"
+   },
+   {
+    "name_uz": "Барои кӯдакон",
+    "name_ru": "Для детей"
+   },
+   {
+    "name_uz": "Барои ҳайвонот",
+    "name_ru": "Для животных"
+   },
+   {
+    "name_uz": "Хона, боғча ва автомобил",
+    "name_ru": "Дом, дача и авто"
+   },
+   {
+    "name_uz": "Маҳсулоти яхкардашуда",
+    "name_ru": "Заморозка"
+   },
+   {
+    "name_uz": "Ҳасиб ва сосиска",
+    "name_ru": "Колбасы и сосиски"
+   },
+   {
+    "name_uz": "Консерваҳо ва бодиринг (шӯр)",
+    "name_ru": "Консервы и соления"
+   },
+   {
+    "name_uz": "Қаҳва ва чой",
+    "name_ru": "Кофе и чай"
+   },
+   {
+    "name_uz": "Зебоӣ ва гигиена (тозагӣ)",
+    "name_ru": "Красота и гигиена"
+   },
+   {
+    "name_uz": "Макарон ва ярма",
+    "name_ru": "Макароны и крупы"
+   },
+   {
+    "name_uz": "Равған, чошниҳо ва ҳанут (адвиёт)",
+    "name_ru": "Масло, соусы и специи"
+   },
+   {
+    "name_uz": "Шир ва тухм",
+    "name_ru": "Молоко и яйца"
+   },
+   {
+    "name_uz": "Гӯшт ва парранда",
+    "name_ru": "Мясо и птица"
+   },
+   {
+    "name_uz": "Сабзавот ва кабудӣ",
+    "name_ru": "Овощи и зелень"
+   },
+   {
+    "name_uz": "Чормағз, газакҳо ва чипсаҳо",
+    "name_ru": "Орехи, снеки и чипсы"
+   },
+   {
+    "name_uz": "Моҳӣ ва маҳсулоти баҳрӣ",
+    "name_ru": "Рыба и морепродукты"
+   },
+   {
+    "name_uz": "Ширинӣ",
+    "name_ru": "Сладости"
+   },
+   {
+    "name_uz": "Ҷомашӯӣ ва тозакории хона",
+    "name_ru": "Стирка и уборка"
+   },
+   {
+    "name_uz": "Панир",
+    "name_ru": "Сыры"
+   },
+   {
+    "name_uz": "Мева ва буттамева",
+    "name_ru": "Фрукты и ягоды"
+   },
+   {
+    "name_uz": "Нон ва маҳсулоти нонӣ",
+    "name_ru": "Хлеб и выпечка"
+   }
+  ]
+ },
+ {
+  "name_uz": "Market",
+  "name_ru": "Маркет",
+  "children": [
+   {
+    "name_uz": "Suv / ichimliklar",
+    "name_ru": "Вода / напитки"
+   },
+   {
+    "name_uz": "Non va non mahsulotlari",
+    "name_ru": "Выпечка и хлебобулочные"
+   },
+   {
+    "name_uz": "Taomlar va yarim tayyor mahsulotlar",
+    "name_ru": "Готовые блюда и полуфабрикаты"
+   },
+   {
+    "name_uz": "Bolalar uchun",
+    "name_ru": "Для детей"
+   },
+   {
+    "name_uz": "Muzlatilgan mahsulotlar",
+    "name_ru": "Замороженные продукты"
+   },
+   {
+    "name_uz": "Ketchup, mayonez, sirka",
+    "name_ru": "Кетчуп, майонез, уксус"
+   },
+   {
+    "name_uz": "Qandolat va shirinliklar",
+    "name_ru": "Кондитерские изделия и сладости"
+   },
+   {
+    "name_uz": "Konservatsiyalangan mahsulotlar",
+    "name_ru": "Консервированные продукты"
+   },
+   {
+    "name_uz": "Don va don mahsulotlar",
+    "name_ru": "Крупы и Зерновые продукты"
+   },
+   {
+    "name_uz": "Makaron, spagetti va lapsha",
+    "name_ru": "Макароны, спагетти и лапша"
+   },
+   {
+    "name_uz": "Ketchup, mayonez",
+    "name_ru": "Маринады, соусы"
+   },
+   {
+    "name_uz": "Asal va murabbo",
+    "name_ru": "Мёд и варенье"
+   },
+   {
+    "name_uz": "Tuxum va sut mahsulotlari",
+    "name_ru": "Молочные продукты и яйца"
+   },
+   {
+    "name_uz": "Un mahsulotlari",
+    "name_ru": "Мука и мучные изделия"
+   },
+   {
+    "name_uz": "Go‘sht va go‘sht mahsulotlari",
+    "name_ru": "Мясо и мясные продукты"
+   },
+   {
+    "name_uz": "Yog‘ mahsulotlari",
+    "name_ru": "Растительные масла"
+   },
+   {
+    "name_uz": "Shakar va tuz",
+    "name_ru": "Сахар и соль"
+   },
+   {
+    "name_uz": "Snaklar va chipslar",
+    "name_ru": "Снеки и чипсы"
+   },
+   {
+    "name_uz": "Ziravorlar va aralashmalar",
+    "name_ru": "Специи и приправы"
+   },
+   {
+    "name_uz": "Quritilgan mevalar",
+    "name_ru": "Сухие фрукты и овощи"
+   },
+   {
+    "name_uz": "Sabzavot va mevalar",
+    "name_ru": "Фрукты и овощи"
+   },
+   {
+    "name_uz": "Choy va qahva",
+    "name_ru": "Чай и кофе"
+   }
+  ]
+ },
+ {
+  "name_uz": "MIX asallar",
+  "name_ru": "Микс мёды",
+  "children": []
+ },
+ {
+  "name_uz": "Tabiiy mahsulotlar",
+  "name_ru": "Натуральные продукты",
+  "children": []
+ },
+ {
+  "name_uz": "Oyoq kiyim",
+  "name_ru": "Обувь",
+  "children": [
+   {
+    "name_uz": "Aksessuarlar",
+    "name_ru": "Аксессуары"
+   },
+   {
+    "name_uz": "Bahorgi",
+    "name_ru": "Весенний"
+   },
+   {
+    "name_uz": "Mavsumiy",
+    "name_ru": "Демисезонный"
+   },
+   {
+    "name_uz": "Qizlar uchun",
+    "name_ru": "Для девочек"
+   },
+   {
+    "name_uz": "O‘g‘il bolalar uchun",
+    "name_ru": "Для мальчиков"
+   },
+   {
+    "name_uz": "Ayollar oyoq kiyimi",
+    "name_ru": "Женская обувь"
+   },
+   {
+    "name_uz": "Qishki",
+    "name_ru": "Зимний"
+   },
+   {
+    "name_uz": "Yozgi",
+    "name_ru": "Летний"
+   },
+   {
+    "name_uz": "Erkaklar oyoq kiyimi",
+    "name_ru": "Мужская обувь"
+   },
+   {
+    "name_uz": "Kuzgi",
+    "name_ru": "Осенний"
+   }
+  ]
+ },
+ {
+  "name_uz": "Kiyim",
+  "name_ru": "Одежда",
+  "children": [
+   {
+    "name_uz": "Aksessuarlar",
+    "name_ru": "Аксессуары"
+   },
+   {
+    "name_uz": "Qizbollar kiyimi",
+    "name_ru": "Для девочек"
+   },
+   {
+    "name_uz": "O'g'il bolalar kiyimi",
+    "name_ru": "Для мальчиков"
+   },
+   {
+    "name_uz": "Chaqaloqlar kiyimi",
+    "name_ru": "Для новорождённых"
+   },
+   {
+    "name_uz": "Ayollar kiyimi",
+    "name_ru": "Женская одежда"
+   },
+   {
+    "name_uz": "Erkaklar kiyimi",
+    "name_ru": "Мужская одежда"
+   },
+   {
+    "name_uz": "Paypoqlar",
+    "name_ru": "Носки"
+   }
+  ]
+ },
+ {
+  "name_uz": "Sovutilgan mahsulotlar",
+  "name_ru": "Охлажденная продукция",
+  "children": [
+   {
+    "name_uz": "-",
+    "name_ru": "-"
+   }
+  ]
+ },
+ {
+  "name_uz": "Oziq - ovqat",
+  "name_ru": "Продуктовый",
+  "children": [
+   {
+    "name_uz": "Muzlatilgan mahsulotlar",
+    "name_ru": "Заморозка"
+   },
+   {
+    "name_uz": "Sut va tuxum",
+    "name_ru": "Молоко и яйца"
+   },
+   {
+    "name_uz": "Pishloqlar",
+    "name_ru": "Сыры"
+   },
+   {
+    "name_uz": "Non va pishiriqlar",
+    "name_ru": "Хлеб и выпечка"
+   }
+  ]
+ },
+ {
+  "name_uz": "Oziq-ovqat",
+  "name_ru": "Продукты питания",
+  "children": [
+   {
+    "name_uz": "Yarim tayyor mahsulotlar",
+    "name_ru": "Блюда и полуфабрикаты"
+   },
+   {
+    "name_uz": "Suv, sharbatlar, ichimliklar",
+    "name_ru": "Вода, соки, напитки"
+   },
+   {
+    "name_uz": "Pishiriqlar va shirinliklar",
+    "name_ru": "Выпечка и сладости"
+   },
+   {
+    "name_uz": "Mol go'shti",
+    "name_ru": "ГОВЯДИНА"
+   },
+   {
+    "name_uz": "Muzlatilgan mahsulotlar",
+    "name_ru": "Замороженные продукты"
+   },
+   {
+    "name_uz": "Sog‘lom ovqatlanish",
+    "name_ru": "Здоровое питание"
+   },
+   {
+    "name_uz": "Kolbasa mahsulotlari",
+    "name_ru": "Колбасные изделия"
+   },
+   {
+    "name_uz": "Konserva",
+    "name_ru": "Консервация"
+   },
+   {
+    "name_uz": "Makaron, don va quruq nonushta",
+    "name_ru": "Макароны, крупы и сухие завтраки"
+   },
+   {
+    "name_uz": "Yog‘lar, souslar va ziravorlar",
+    "name_ru": "Масла, соусы и приправы"
+   },
+   {
+    "name_uz": "Asal, murabbo va shirin konserva",
+    "name_ru": "Мед, варенье, сладкая консервация"
+   },
+   {
+    "name_uz": "Sut va sut mahsulotlari",
+    "name_ru": "Молоко и молочные продукты"
+   },
+   {
+    "name_uz": "Un, shakar va tuz",
+    "name_ru": "Мука, сахар и соль"
+   },
+   {
+    "name_uz": "Go‘sht, parranda va go‘sht mahsulotlari",
+    "name_ru": "Мясо, птица и мясные продукты"
+   },
+   {
+    "name_uz": "Sabzavotlar, mevalar va yong‘oqlar",
+    "name_ru": "Овощи, фрукты и ягоды"
+   },
+   {
+    "name_uz": "Pishiriqlar va desertlar uchun mahsulotlar",
+    "name_ru": "Продукты для выпечки и десертов"
+   },
+   {
+    "name_uz": "Snaklar, yong‘oqlar va urug‘lar",
+    "name_ru": "Снеки, орехи и семечки"
+   },
+   {
+    "name_uz": "QIYMA MOL GO'SHTI",
+    "name_ru": "ФАРШ ГОВЯДИНА"
+   },
+   {
+    "name_uz": "Choy, qahva va kakao",
+    "name_ru": "Чай, кофе и какао"
+   }
+  ]
+ },
+ {
+  "name_uz": "Asalarichilik mahsulotlari",
+  "name_ru": "Продукты пчеловодства",
+  "children": []
+ },
+ {
+  "name_uz": "Sanoat tikuv mashinasi",
+  "name_ru": "Промышленная швейная машина",
+  "children": [
+   {
+    "name_uz": "Tikuv mashinalar",
+    "name_ru": "Швейные машины"
+   }
+  ]
+ },
+ {
+  "name_uz": "Restoran",
+  "name_ru": "Ресторан",
+  "children": [
+   {
+    "name_uz": "Assorti",
+    "name_ru": "Ассорти"
+   },
+   {
+    "name_uz": "Taomlar",
+    "name_ru": "Блюда"
+   },
+   {
+    "name_uz": "Tez tayyorlanadi",
+    "name_ru": "Быстрые блюда"
+   },
+   {
+    "name_uz": "Ikkinchi taomlar",
+    "name_ru": "Вторые блюда"
+   },
+   {
+    "name_uz": "Garnirlar",
+    "name_ru": "Гарниры"
+   },
+   {
+    "name_uz": "Issiq zakuskalar",
+    "name_ru": "Горячие закуски"
+   },
+   {
+    "name_uz": "Shirinliklar",
+    "name_ru": "Десерты"
+   },
+   {
+    "name_uz": "Bolalar menyusi",
+    "name_ru": "Детское меню"
+   },
+   {
+    "name_uz": "Evropa taomlari",
+    "name_ru": "Евро кухня"
+   },
+   {
+    "name_uz": "Nonushtalar",
+    "name_ru": "Завтраки"
+   },
+   {
+    "name_uz": "Zakuskalar",
+    "name_ru": "Закуски"
+   },
+   {
+    "name_uz": "Kofe",
+    "name_ru": "Кофе"
+   },
+   {
+    "name_uz": "Limonadlar",
+    "name_ru": "Лимонады"
+   },
+   {
+    "name_uz": "Mangal",
+    "name_ru": "Мангал"
+   },
+   {
+    "name_uz": "-Ichimliklar",
+    "name_ru": "-Напитки"
+   },
+   {
+    "name_uz": "Ichimliklar",
+    "name_ru": "Напитки"
+   },
+   {
+    "name_uz": "Norin",
+    "name_ru": "Норын"
+   },
+   {
+    "name_uz": "Asosiy taomlar",
+    "name_ru": "Основные блюда"
+   },
+   {
+    "name_uz": "Pastalar",
+    "name_ru": "Пасты"
+   },
+   {
+    "name_uz": "Birinchi taomlar",
+    "name_ru": "Первые блюда"
+   },
+   {
+    "name_uz": "Osh",
+    "name_ru": "Плов"
+   },
+   {
+    "name_uz": "Baliq assorti",
+    "name_ru": "Рыбные ассорти"
+   },
+   {
+    "name_uz": "Salatlar",
+    "name_ru": "Салаты"
+   },
+   {
+    "name_uz": "Somsa",
+    "name_ru": "Самса"
+   },
+   {
+    "name_uz": "Smuzi",
+    "name_ru": "Смузи"
+   },
+   {
+    "name_uz": "Sho‘rvalar",
+    "name_ru": "Супы"
+   },
+   {
+    "name_uz": "Pishloqlar",
+    "name_ru": "Сыры"
+   },
+   {
+    "name_uz": "Uyg‘ur taomlari",
+    "name_ru": "Уйгурская кухня"
+   },
+   {
+    "name_uz": "Meva va disertlar",
+    "name_ru": "Фрукты и десерты"
+   },
+   {
+    "name_uz": "Non",
+    "name_ru": "Хлеб"
+   },
+   {
+    "name_uz": "Sovuq zakuskalar",
+    "name_ru": "Холодные закуски"
+   },
+   {
+    "name_uz": "Choy",
+    "name_ru": "Чай"
+   },
+   {
+    "name_uz": "Shashlik",
+    "name_ru": "Шашлык"
+   },
+   {
+    "name_uz": "Shashlik va mangal",
+    "name_ru": "Шашлык и мангал"
+   }
+  ]
+ },
+ {
+  "name_uz": "Qol ishlari",
+  "name_ru": "Ручные изделия",
+  "children": []
+ },
+ {
+  "name_uz": "Santexnika",
+  "name_ru": "Сантехника",
+  "children": [
+   {
+    "name_uz": "Calefi",
+    "name_ru": "Calefi"
+   },
+   {
+    "name_uz": "PPR truba fitinglar",
+    "name_ru": "PPR трубы фитинги"
+   },
+   {
+    "name_uz": "Suv isitgich",
+    "name_ru": "Водонагреватель"
+   },
+   {
+    "name_uz": "Gaz kolonkalari",
+    "name_ru": "Газовые колонки"
+   },
+   {
+    "name_uz": "Gaz uskunalari qismlari",
+    "name_ru": "Газовые элемнты"
+   },
+   {
+    "name_uz": "Dizaynerskiy radiator",
+    "name_ru": "Дизайнерский радиатор"
+   },
+   {
+    "name_uz": "Yopuvchi armaturalar",
+    "name_ru": "Запорные арматуры"
+   },
+   {
+    "name_uz": "Izolyatsiya",
+    "name_ru": "Изоляция"
+   },
+   {
+    "name_uz": "Kanalizatsiya quvirlari",
+    "name_ru": "Канализационные трубы"
+   },
+   {
+    "name_uz": "Nasos uskunalari",
+    "name_ru": "Насосное оборудование"
+   },
+   {
+    "name_uz": "Osma qozonlar",
+    "name_ru": "Настенные котлы"
+   },
+   {
+    "name_uz": "Radiator",
+    "name_ru": "Радиатор"
+   },
+   {
+    "name_uz": "Kengaytirish baki",
+    "name_ru": "Расширительный бачок"
+   },
+   {
+    "name_uz": "Stabilizatorlar",
+    "name_ru": "Стабилизаторы"
+   },
+   {
+    "name_uz": "Issiq pol va sintefon",
+    "name_ru": "Тёплый пол и синтефон"
+   },
+   {
+    "name_uz": "Elektor qozonlar",
+    "name_ru": "Электрические котлы"
+   }
+  ]
+ },
+ {
+  "name_uz": "Maxsus kiyim",
+  "name_ru": "Спецодежда",
+  "children": [
+   {
+    "name_uz": "Ayollar",
+    "name_ru": "Женский"
+   },
+   {
+    "name_uz": "Erkaklar",
+    "name_ru": "Мужской"
+   }
+  ]
+ },
+ {
+  "name_uz": "Sport kiymi",
+  "name_ru": "Спортивная одежда",
+  "children": []
+ },
+ {
+  "name_uz": "Sport tovarlar va aksessuarlar",
+  "name_ru": "Спортивные товары и аксессуары",
+  "children": []
+ },
+ {
+  "name_uz": "Sport va dam olish",
+  "name_ru": "Спорт и отдых",
+  "children": [
+   {
+    "name_uz": "Faol dam olish turlari",
+    "name_ru": "Активные виды отдыха"
+   },
+   {
+    "name_uz": "Yugurish va piyoda yurish",
+    "name_ru": "Бег и ходьба"
+   },
+   {
+    "name_uz": "Bokschilik va jang san’ati",
+    "name_ru": "Бокс и единоборства"
+   },
+   {
+    "name_uz": "Velosport",
+    "name_ru": "Велоспорт"
+   },
+   {
+    "name_uz": "Sport turlari",
+    "name_ru": "Виды спорта"
+   },
+   {
+    "name_uz": "Suv sporti va suvdagi dam olish",
+    "name_ru": "Водный спорт и отдых на воде"
+   },
+   {
+    "name_uz": "Qishki sport",
+    "name_ru": "Зимний спорт"
+   },
+   {
+    "name_uz": "Jamoaviy sport",
+    "name_ru": "Командный спорт"
+   },
+   {
+    "name_uz": "Tabiatda dam olish, baliq ovlash va ovchilik",
+    "name_ru": "Отдых на природе, рыбалка и охота"
+   },
+   {
+    "name_uz": "Roliklar, skeytlar va skuterlar",
+    "name_ru": "Ролики, скейты и самокаты"
+   },
+   {
+    "name_uz": "Rolik konkilar, jihozlar va ehtiyot qismlar",
+    "name_ru": "Роликовые коньки, экипировка и запчасти"
+   },
+   {
+    "name_uz": "Skuterlar va aksessuarlar",
+    "name_ru": "Самокаты и аксессуары"
+   },
+   {
+    "name_uz": "Erkin og‘irliklar",
+    "name_ru": "Свободные веса"
+   },
+   {
+    "name_uz": "Skeytboarding",
+    "name_ru": "Скейтбординг"
+   },
+   {
+    "name_uz": "Sport idishlari va sheykerlar",
+    "name_ru": "Спортивные бутылки и шейкеры"
+   },
+   {
+    "name_uz": "Tennis va badminton",
+    "name_ru": "Теннис и бадминтон"
+   },
+   {
+    "name_uz": "Trenaжyorlar",
+    "name_ru": "Тренажеры"
+   },
+   {
+    "name_uz": "Fitnes va yoga",
+    "name_ru": "Фитнес и йога"
+   },
+   {
+    "name_uz": "Futbol",
+    "name_ru": "Футбол"
+   },
+   {
+    "name_uz": "Elektr transporti",
+    "name_ru": "Электротранспорт"
+   }
+  ]
+ },
+ {
+  "name_uz": "Qurilish va ta’mirlash",
+  "name_ru": "Строительство и ремонт",
+  "children": [
+   {
+    "name_uz": "Ventilyatsiya",
+    "name_ru": "Вентиляция"
+   },
+   {
+    "name_uz": "Uy va bog‘ uchun suv ta’minoti",
+    "name_ru": "Водоснабжение для дома и сада"
+   },
+   {
+    "name_uz": "Eshiklar, derazalar va jihozlar",
+    "name_ru": "Двери, окна и комплектующие"
+   },
+   {
+    "name_uz": "Asbob-uskunalar",
+    "name_ru": "Инструменты"
+   },
+   {
+    "name_uz": "G‘isht va shlakoblok",
+    "name_ru": "Кирпич и шлакоблок"
+   },
+   {
+    "name_uz": "Krepyoj va aksessuarlar",
+    "name_ru": "Крепеж и фурнитура"
+   },
+   {
+    "name_uz": "Bo‘yoq va lak materiallari",
+    "name_ru": "Лакокрасочные материалы"
+   },
+   {
+    "name_uz": "Yorug‘lik uskunalari",
+    "name_ru": "Освещение"
+   },
+   {
+    "name_uz": "Yakunlovchi materiallar",
+    "name_ru": "Отделочные материалы"
+   },
+   {
+    "name_uz": "Isitish uskunalari",
+    "name_ru": "Отопление"
+   },
+   {
+    "name_uz": "Sarf materiallari va asbob-uskunalar",
+    "name_ru": "Расходные материалы и оснастка"
+   },
+   {
+    "name_uz": "Santexnika",
+    "name_ru": "Сантехника"
+   },
+   {
+    "name_uz": "Shaxsiy himoya vositalari",
+    "name_ru": "Средства индивидуальной защиты"
+   },
+   {
+    "name_uz": "Qurilish uskunalari",
+    "name_ru": "Строительное оборудование"
+   },
+   {
+    "name_uz": "Qurilish materiallari",
+    "name_ru": "Строительные материалы"
+   },
+   {
+    "name_uz": "Stroy pistoletlar",
+    "name_ru": "Строй пистолеты"
+   },
+   {
+    "name_uz": "Quruq aralashmalar",
+    "name_ru": "Сухие смеси"
+   },
+   {
+    "name_uz": "Elektrika",
+    "name_ru": "Электрика"
+   },
+   {
+    "name_uz": "Elektr asboblari",
+    "name_ru": "Электроинструменты"
+   }
+  ]
+ },
+ {
+  "name_uz": "Uy jihozlari",
+  "name_ru": "Товары для дома",
+  "children": [
+   {
+    "name_uz": "Dekor va interyer",
+    "name_ru": "Декор и интерьер"
+   },
+   {
+    "name_uz": "Mebel",
+    "name_ru": "Мебель"
+   },
+   {
+    "name_uz": "To‘qimachilik buyumlari",
+    "name_ru": "Текстиль"
+   },
+   {
+    "name_uz": "Banya va sauna buyumlari",
+    "name_ru": "Товары для бани и сауны"
+   },
+   {
+    "name_uz": "Xonadagi o‘simliklar uchun buyumlar",
+    "name_ru": "Товары для комнатных растений"
+   },
+   {
+    "name_uz": "Oshxona buyumlari",
+    "name_ru": "Товары для кухни"
+   },
+   {
+    "name_uz": "Bayram buyumlari",
+    "name_ru": "Товары для праздников"
+   },
+   {
+    "name_uz": "Maishiy buyumlar",
+    "name_ru": "Хозяйственные товары"
+   },
+   {
+    "name_uz": "Buyumlarni saqlash vositalari",
+    "name_ru": "Хранение вещей"
+   },
+   {
+    "name_uz": "Pardalar va jalyuzilar",
+    "name_ru": "Шторы и жалюзи"
+   }
+  ]
+ },
+ {
+  "name_uz": "Turizm, baliq ovlash va ov",
+  "name_ru": "Туризм, рыбалка и охота",
+  "children": [
+   {
+    "name_uz": "Taktik kiyimlar",
+    "name_ru": "Тактическая одежда"
+   },
+   {
+    "name_uz": "Turizm va tabiatda dam olish",
+    "name_ru": "Туризм и отдых на природе"
+   }
+  ]
+ },
+ {
+  "name_uz": "Hobbi va ijod",
+  "name_ru": "Хобби и творчество",
+  "children": [
+   {
+    "name_uz": "Bashorat va ezoterika",
+    "name_ru": "Гадания и эзотерика"
+   },
+   {
+    "name_uz": "Haykaltaroshlik va loy bilan ishlash",
+    "name_ru": "Лепка"
+   },
+   {
+    "name_uz": "Musiqa asboblari",
+    "name_ru": "Музыкальные инструменты"
+   },
+   {
+    "name_uz": "Stol va karta o‘yinlari",
+    "name_ru": "Настольные и карточные игры"
+   },
+   {
+    "name_uz": "Pazllar, mozaika va freskalar",
+    "name_ru": "Пазлы, мозаика и фреска"
+   },
+   {
+    "name_uz": "Boshqa hobbi",
+    "name_ru": "Прочие хобби"
+   },
+   {
+    "name_uz": "Chizish",
+    "name_ru": "Рисование"
+   },
+   {
+    "name_uz": "Qo‘l mehnati",
+    "name_ru": "Рукоделие"
+   },
+   {
+    "name_uz": "Rasmlar, fototasvirlar va kartochkalar yaratish",
+    "name_ru": "Создание картин, фоторамок, открыток"
+   }
+  ]
+ },
+ {
+  "name_uz": "Gullar",
+  "name_ru": "Цветы",
+  "children": [
+   {
+    "name_uz": "Guldastalar",
+    "name_ru": "Букеты"
+   },
+   {
+    "name_uz": "Buketlar katta",
+    "name_ru": "Букеты большые"
+   },
+   {
+    "name_uz": "Buketlar mayda",
+    "name_ru": "Букеты маленькие"
+   },
+   {
+    "name_uz": "Uy gullari",
+    "name_ru": "Домашние"
+   },
+   {
+    "name_uz": "Savat",
+    "name_ru": "Корзина"
+   },
+   {
+    "name_uz": "Uzun shoxli gullar",
+    "name_ru": "Цветы ветки"
+   },
+   {
+    "name_uz": "Donalilar",
+    "name_ru": "Штучные"
+   }
+  ]
+ },
+ {
+  "name_uz": "Elektronika",
+  "name_ru": "Электроника",
+  "children": [
+   {
+    "name_uz": "Elektronika aksessuarlari",
+    "name_ru": "Аксессуары для электроники"
+   },
+   {
+    "name_uz": "Kvadrakopterlar va aksessuarlar",
+    "name_ru": "Квадрокоптеры и аксессуары"
+   },
+   {
+    "name_uz": "Kompyuter texnikasi",
+    "name_ru": "Компьютерная техника"
+   },
+   {
+    "name_uz": "Navigatorlar",
+    "name_ru": "Навигаторы"
+   },
+   {
+    "name_uz": "Quloqchinlar va audiotexnika",
+    "name_ru": "Наушники и аудиотехника"
+   },
+   {
+    "name_uz": "Noutbuklar, planshetlar va elektron kitoblar",
+    "name_ru": "Ноутбуки, планшеты и электронные книги"
+   },
+   {
+    "name_uz": "Optik asboblar",
+    "name_ru": "Оптические приборы"
+   },
+   {
+    "name_uz": "Ofis texnikasi",
+    "name_ru": "Офисная техника"
+   },
+   {
+    "name_uz": "Robot",
+    "name_ru": "Робот"
+   },
+   {
+    "name_uz": "Smartfonlar va telefonlar",
+    "name_ru": "Смартфоны и телефоны"
+   },
+   {
+    "name_uz": "Televizorlar va videotexnika",
+    "name_ru": "Телевизоры и видеотехника"
+   },
+   {
+    "name_uz": "Gamerlar uchun buyumlar",
+    "name_ru": "Товары для геймеров"
+   },
+   {
+    "name_uz": "Aqlli soatlar va fitnes bilaguzuklar",
+    "name_ru": "Умные часы и фитнес браслеты"
+   },
+   {
+    "name_uz": "Aqlli uy va xavfsizlik tizimlari",
+    "name_ru": "Умный дом и безопасность"
+   },
+   {
+    "name_uz": "Foto va videotexnika",
+    "name_ru": "Фото и видеотехника"
+   },
+   {
+    "name_uz": "Soatlar va elektron signalizatsiya soatlari",
+    "name_ru": "Часы и электронные будильники"
+   }
+  ]
+ },
+ {
+  "name_uz": "Zargarlik buyumlari",
+  "name_ru": "Ювелирные изделия",
+  "children": [
+   {
+    "name_uz": "Olmos",
+    "name_ru": "Бриллиант"
+   },
+   {
+    "name_uz": "Marvarid",
+    "name_ru": "Жемчуг"
+   },
+   {
+    "name_uz": "Oltin",
+    "name_ru": "Золото"
+   },
+   {
+    "name_uz": "Platina",
+    "name_ru": "Платина"
+   },
+   {
+    "name_uz": "Kumush",
+    "name_ru": "Серебро"
+   }
+  ]
+ }
+]

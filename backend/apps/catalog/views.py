@@ -1,8 +1,10 @@
 import os
 
+from django.db.models import Q
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -11,15 +13,49 @@ from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404
 
 from apps.stores.models import Store
-from .models import Category, Product
+from .models import Category, GlobalProduct, Product
 from .permissions import IsOperatorWithStore
 from .serializers import (
     CategorySerializer,
+    GlobalProductSerializer,
     ProductSerializer,
     PublicCategorySerializer,
     PublicStoreSerializer,
 )
-from .services import import_products
+from .services import add_global_products_to_store, import_products
+
+
+class GlobalProductPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
+class GlobalProductListView(ListAPIView):
+    serializer_class = GlobalProductSerializer
+    permission_classes = [IsOperatorWithStore]
+    pagination_class = GlobalProductPagination
+
+    def get_queryset(self):
+        qs = GlobalProduct.objects.all()
+        q = self.request.query_params.get("q", "").strip()
+        barcode = self.request.query_params.get("barcode", "").strip()
+        if q:
+            qs = qs.filter(Q(name_uz__icontains=q) | Q(name_ru__icontains=q))
+        if barcode:
+            qs = qs.filter(Q(barcode__icontains=barcode) | Q(ikpu__icontains=barcode))
+        return qs
+
+
+class GlobalProductAddView(APIView):
+    permission_classes = [IsOperatorWithStore]
+
+    def post(self, request):
+        ids = request.data.get("ids", [])
+        if not isinstance(ids, list):
+            return Response({"detail": "ids must be a list"}, status=400)
+        result = add_global_products_to_store(store=request.user.store, ids=ids)
+        return Response(result, status=200)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
