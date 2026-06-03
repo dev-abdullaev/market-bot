@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Box,
@@ -25,6 +25,9 @@ import { ErrorAlert } from "../ui/Alert";
 import { Spinner } from "../ui/Spinner";
 import { Modal } from "../ui/Modal";
 import { DimensionsBox } from "./DimensionsBox";
+
+// Lazy-loaded so three.js stays out of the main panel bundle (separate chunk).
+const DimensionsBox3D = lazy(() => import("./DimensionsBox3D"));
 
 const TABS = [
   { id: "main", labelKey: "tab_main" },
@@ -598,11 +601,21 @@ export function ProductModal({
                     />
                   </FieldRow>
                 </div>
-                <DimensionsBox
-                  length={f.length_cm}
-                  width={f.width_cm}
-                  height={f.height_cm}
-                />
+                <Suspense
+                  fallback={
+                    <DimensionsBox
+                      length={f.length_cm}
+                      width={f.width_cm}
+                      height={f.height_cm}
+                    />
+                  }
+                >
+                  <DimensionsBox3D
+                    length={f.length_cm}
+                    width={f.width_cm}
+                    height={f.height_cm}
+                  />
+                </Suspense>
               </div>
             </div>
 
