@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from apps.stores.models import Store
-from .models import Category, Product
+from .models import Category, GlobalProduct, Product
 
 
 class PublicStoreSerializer(serializers.ModelSerializer):
@@ -57,6 +57,28 @@ class PublicProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ["id", "name_ru", "name_uz", "description_ru", "description_uz",
                   "price", "unit", "photo_url"]
+
+
+class GlobalProductSerializer(serializers.ModelSerializer):
+    """Read-only serializer for the global product catalog."""
+
+    class Meta:
+        model = GlobalProduct
+        fields = [
+            "id",
+            "name_uz",
+            "name_ru",
+            "barcode",
+            "ikpu",
+            "price",
+            "discount_price",
+            "unit",
+            "brand",
+            "model",
+            "manufacturer",
+            "image_url",
+            "recommended_category",
+        ]
 
 
 class PublicCategorySerializer(serializers.ModelSerializer):

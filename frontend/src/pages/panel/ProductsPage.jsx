@@ -4,7 +4,6 @@ import {
   Eraser,
   Package,
   Pencil,
-  Plus,
   Search,
   SlidersHorizontal,
   Upload,
@@ -36,6 +35,8 @@ import {
 } from "../../components/panel/common";
 import { ProductModal } from "../../components/products/ProductModal";
 import { ImportModal } from "../../components/products/ImportModal";
+import { AddProductMenu } from "../../components/products/AddProductMenu";
+import { GlobalProductPicker } from "../../components/products/GlobalProductPicker";
 
 const STATUS_LABEL = { active: "st_active", hidden: "st_hidden", out: "st_out" };
 
@@ -94,6 +95,7 @@ export default function ProductsPage() {
   const [editing, setEditing] = useState(null); // null | {} (new) | product
   const [modalOpen, setModalOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [globalOpen, setGlobalOpen] = useState(false);
 
   const catIndex = useMemo(() => indexCategories(categories), [categories]);
 
@@ -217,10 +219,10 @@ export default function ProductsPage() {
               <Upload className="h-4 w-4" strokeWidth={2.2} />
               <span className="hidden sm:inline">{t("p_import")}</span>
             </Button>
-            <Button size="sm" onClick={openNew}>
-              <Plus className="h-4 w-4" strokeWidth={2.4} />
-              {t("p_add")}
-            </Button>
+            <AddProductMenu
+              onManual={openNew}
+              onGlobal={() => setGlobalOpen(true)}
+            />
           </>
         }
       />
@@ -489,6 +491,15 @@ export default function ProductsPage() {
         onImported={() => {
           load();
           setToast(t("import_done"));
+        }}
+      />
+
+      <GlobalProductPicker
+        open={globalOpen}
+        onOpenChange={setGlobalOpen}
+        onAdded={(msg) => {
+          load();
+          setToast(msg);
         }}
       />
 

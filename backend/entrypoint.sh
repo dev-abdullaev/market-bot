@@ -15,6 +15,9 @@ fi
 echo "Running migrations..."
 python manage.py migrate --noinput
 
+echo "Seeding global product catalog..."
+python manage.py seed_global_catalog
+
 echo "Collecting static files..."
 # Non-fatal: in local dev the bind-mounted /app is host-owned and the non-root
 # container user can't write staticfiles/ (PermissionError). On a real host
