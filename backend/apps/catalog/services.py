@@ -154,7 +154,9 @@ def add_global_products_to_store(store, ids):
                 category=category,
                 name_uz=gp.name_uz,
                 name_ru=gp.name_ru,
-                price=gp.price,
+                # Price is intentionally left at 0 — the store owner sets their
+                # own selling price after importing from the global catalog.
+                price=Decimal("0"),
                 unit=gp.unit,
                 barcode=gp.barcode,
                 ikpu=gp.ikpu,
@@ -167,8 +169,8 @@ def add_global_products_to_store(store, ids):
                 height_cm=gp.height_cm,
                 photo_url=gp.image_url or "",
                 images=[gp.image_url] if gp.image_url else [],
-                has_discount=bool(gp.discount_price),
-                discount_price=gp.discount_price,
+                has_discount=False,
+                discount_price=None,
             )
             created_count += 1
 

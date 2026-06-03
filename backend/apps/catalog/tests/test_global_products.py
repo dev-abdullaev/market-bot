@@ -251,9 +251,10 @@ def test_add_to_store_copies_fields():
     p = Product.objects.get(store=store, barcode="PLASH001")
     assert p.name_uz == "Plash"
     assert p.name_ru == "Плащ"
-    assert p.price == Decimal("120000.00")
-    assert p.discount_price == Decimal("100000.00")
-    assert p.has_discount is True
+    # Price/discount are NOT copied — the store owner sets their own price.
+    assert p.price == Decimal("0")
+    assert p.discount_price is None
+    assert p.has_discount is False
     assert p.unit == "dona"
     assert p.brand == "BrandX"
     assert p.model == "M100"

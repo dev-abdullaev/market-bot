@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import api from "../../lib/api";
 import { t, tf, pname } from "../../lib/i18n";
-import { formatPrice } from "../../lib/format";
 import { cn } from "../../lib/cn";
 import { Modal } from "../ui/Modal";
 import { Button } from "../ui/Button";
@@ -85,11 +84,6 @@ function Row({ product, checked, onToggle }) {
           {t("gp_rec_cat")}: {cat || "—"}
         </p>
       </div>
-      {product.price && Number(product.price) > 0 ? (
-        <span className="shrink-0 font-display text-sm font-extrabold text-primary">
-          {formatPrice(product.price)}
-        </span>
-      ) : null}
     </button>
   );
 }
@@ -99,7 +93,7 @@ function Pane({ title, count, children, className }) {
   return (
     <div
       className={cn(
-        "flex min-h-0 flex-col rounded-2xl border border-border bg-muted/30",
+        "flex min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-muted/30",
         className
       )}
     >
@@ -318,7 +312,7 @@ export function GlobalProductPicker({ open, onOpenChange, onAdded }) {
       title={t("gp_title")}
       header={header}
       footer={footer}
-      size="2xl"
+      size="3xl"
       className="sm:max-h-[90svh]"
     >
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[1fr_auto_1fr]">
