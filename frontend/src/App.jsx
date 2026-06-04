@@ -1,9 +1,9 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Storefront from "./pages/Storefront";
 import Checkout from "./pages/Checkout";
 import Login from "./pages/Login";
 import Panel from "./pages/Panel";
-import Dashboard from "./pages/panel/Dashboard";
 import OrdersPage from "./pages/panel/OrdersPage";
 import ProductsPage from "./pages/panel/ProductsPage";
 import MenuConstructor from "./pages/panel/MenuConstructor";
@@ -15,6 +15,8 @@ import SettingsPage from "./pages/panel/SettingsPage";
 import RegisterStore from "./pages/webapp/RegisterStore";
 import ProductForm from "./pages/webapp/ProductForm";
 import ProtectedRoute from "./components/ProtectedRoute";
+
+const Dashboard = lazy(() => import("./pages/panel/Dashboard"));
 
 export default function App() {
   return (
@@ -41,7 +43,7 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<Dashboard />} />
+          <Route index element={<Suspense fallback={<div className="p-8 text-sm text-muted-foreground">Yuklanmoqda...</div>}><Dashboard /></Suspense>} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="products" element={<ProductsPage />} />
           <Route path="menu" element={<MenuConstructor />} />

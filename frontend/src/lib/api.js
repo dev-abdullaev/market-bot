@@ -4,7 +4,7 @@ import { getToken, clearToken } from "./auth";
 // In dev, Vite proxies /api -> http://localhost:8000 (see vite.config.js).
 const api = axios.create({
   baseURL: "/api",
-  timeout: 12000,
+  timeout: 60000,
 });
 
 // Attach the JWT bearer token (if any) to every request.

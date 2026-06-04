@@ -370,17 +370,22 @@ export default function Dashboard() {
   const [date, setDate] = useState(todayISO());
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [slowConn, setSlowConn] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    Promise.resolve().then(() => alive && setLoading(true));
+    Promise.resolve().then(() => {
+      if (alive) { setLoading(true); setSlowConn(false); }
+    });
+    const slowTimer = setTimeout(() => alive && setSlowConn(true), 5000);
     api
       .get("/admin/analytics", { params: { period, date } })
       .then((r) => alive && setData(r.data))
       .catch(() => alive && setData(null))
-      .finally(() => alive && setLoading(false));
+      .finally(() => { if (alive) { setLoading(false); setSlowConn(false); } });
     return () => {
       alive = false;
+      clearTimeout(slowTimer);
     };
   }, [period, date]);
 
@@ -436,7 +441,15 @@ export default function Dashboard() {
       />
 
       {loading ? (
-        <DashboardSkeleton />
+        <>
+          {slowConn ? (
+            <div className="mb-4 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
+              <span className="inline-block h-2.5 w-2.5 animate-pulse rounded-full bg-amber-500" />
+              {t("server_waking_up")}
+            </div>
+          ) : null}
+          <DashboardSkeleton />
+        </>
       ) : (
         <div className="space-y-6">
           {/* 2 — stat cards */}

@@ -2,8 +2,10 @@ import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   Box,
+  ChevronRight,
   ImagePlus,
   Info,
+  Search,
   Sparkles,
   Star,
   Trash2,
@@ -158,6 +160,102 @@ function ImageSlot({ slot, cover, onPick, onRemove }) {
   );
 }
 
+/** Searchable category dropdown — replaces the plain <Select> for category. */
+function CategorySearchSelect({ options, value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const ref = useRef(null);
+
+  const filtered = useMemo(() => {
+    if (!q.trim()) return options;
+    const lo = q.toLowerCase();
+    return options.filter((c) => c.name.toLowerCase().includes(lo));
+  }, [options, q]);
+
+  const selected = useMemo(
+    () => options.find((c) => String(c.id) === String(value)),
+    [options, value]
+  );
+
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex h-11 w-full items-center justify-between gap-2 rounded-xl border border-border bg-background px-3.5 text-sm shadow-soft transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer"
+      >
+        <span className={cn("truncate", selected ? "text-foreground font-semibold" : "text-muted-foreground")}>
+          {selected ? selected.name : t("no_category")}
+        </span>
+        <ChevronRight
+          className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", open && "rotate-90")}
+          strokeWidth={2.2}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open ? (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-border bg-background shadow-lift"
+          >
+            <div className="border-b border-border p-2">
+              <Input
+                icon={Search}
+                placeholder={t("gp_cat_search")}
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                className="h-8 text-xs"
+              />
+            </div>
+            <div className="max-h-48 overflow-y-auto">
+              <button
+                type="button"
+                onClick={() => { onChange(""); setOpen(false); setQ(""); }}
+                className="flex w-full items-center px-3 py-2 text-sm text-muted-foreground hover:bg-muted cursor-pointer"
+              >
+                — {t("no_category")} —
+              </button>
+              {filtered.map((c) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => { onChange(String(c.id)); setOpen(false); setQ(""); }}
+                  className={cn(
+                    "flex w-full items-center gap-2 px-3 py-2 text-sm cursor-pointer hover:bg-muted",
+                    String(c.id) === String(value)
+                      ? "bg-primary/5 font-bold text-primary"
+                      : "text-foreground"
+                  )}
+                  style={{ paddingLeft: `${12 + c.depth * 16}px` }}
+                >
+                  {c.depth > 0 ? <span className="text-muted-foreground">└</span> : null}
+                  {c.name}
+                </button>
+              ))}
+              {!filtered.length && (
+                <p className="px-3 py-2 text-xs text-muted-foreground">{t("gp_none_found")}</p>
+              )}
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 function FieldRow({ label, htmlFor, children, className }) {
   return (
     <div className={className}>
@@ -269,10 +367,10 @@ export function ProductModal({
         in_stock: f.in_stock,
         is_hidden: f.is_hidden,
         seasonality: f.seasonality,
-        weight_kg: numOrNull(f.weight_kg),
-        length_cm: numOrNull(f.length_cm),
-        width_cm: numOrNull(f.width_cm),
-        height_cm: numOrNull(f.height_cm),
+        weight_kg: numOrZero(f.weight_kg),
+        length_cm: numOrZero(f.length_cm),
+        width_cm: numOrZero(f.width_cm),
+        height_cm: numOrZero(f.height_cm),
         manufacturer: f.manufacturer,
         brand: f.brand,
         model: f.model,
@@ -412,17 +510,12 @@ export function ProductModal({
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <FieldRow label={t("field_category")} htmlFor="pm-cat">
-                <Select id="pm-cat" value={f.category} onChange={set("category")}>
-                  <option value="">— {t("no_category")} —</option>
-                  {catOptions.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {"  ".repeat(c.depth)}
-                      {c.depth ? "└ " : ""}
-                      {c.name}
-                    </option>
-                  ))}
-                </Select>
+              <FieldRow label={t("field_category")}>
+                <CategorySearchSelect
+                  options={catOptions}
+                  value={f.category}
+                  onChange={set("category")}
+                />
               </FieldRow>
               <FieldRow label={t("field_sort_order")} htmlFor="pm-sort">
                 <Input
@@ -670,7 +763,7 @@ export function ProductModal({
             </div>
             <div className="rounded-xl border border-border bg-background px-4 py-2.5 text-sm font-bold text-primary shadow-soft">
               {t("variants_contact")}:{" "}
-              {supportUsername ? `@${supportUsername}` : "@admin"}
+              {supportUsername ? `@${supportUsername}` : "@bdullaev"}
             </div>
           </motion.div>
         ) : null}
@@ -740,8 +833,8 @@ function toInt(v) {
   const n = parseInt(v, 10);
   return Number.isFinite(n) ? n : 0;
 }
-function numOrNull(v) {
-  if (v === "" || v == null) return null;
+function numOrZero(v) {
+  if (v === "" || v == null) return 0;
   const n = Number(v);
-  return Number.isFinite(n) ? n : null;
+  return Number.isFinite(n) ? n : 0;
 }
