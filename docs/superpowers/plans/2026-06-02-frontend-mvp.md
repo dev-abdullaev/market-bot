@@ -924,7 +924,7 @@ EXPOSE 80
   frontend:
     build: ./frontend
     depends_on: [backend]
-    ports: ["8080:80"]
+    ports: ["8070:80"]
     restart: unless-stopped
 ```
 
@@ -952,5 +952,5 @@ git commit -m "feat(frontend): dockerize SPA (nginx) + wire into docker-compose"
 - **API contract alignment:** operator orders use `/api/admin/orders` (not `/api/orders`); product photo via multipart `photo`; store id for ordering resolved via `GET /api/shop/:slug`. Matches backend.
 - **Testing posture (per decision):** minimal — unit tests for `cart` and `auth` token storage; every task gated by `npm run build`; E2E deferred to Playwright. No component tests by choice.
 - **Deferred (post-MVP):** polished design (frontend-design pass), store settings screen, delivery-pricing UI, payments UI, product variants, image cropping, optimistic updates, error toasts, per-store theming. Operator order status is also changeable here (web panel) in addition to the bot's inline buttons.
-- **Live run:** `docker compose up` serves frontend on :8080 (nginx → backend). For Telegram WebApp, set the bot's WebApp/menu URL + `FRONTEND_WEBAPP_URL` to the deployed https origin.
+- **Live run:** `docker compose up` serves frontend on 8070 (nginx → backend). For Telegram WebApp, set the bot's WebApp/menu URL + `FRONTEND_WEBAPP_URL` to the deployed https origin.
 ```
