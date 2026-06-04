@@ -209,16 +209,20 @@ function CategorySearchSelect({ options, value, onChange }) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 400, damping: 30 }}
-            className="absolute left-0 right-0 z-50 mt-1 overflow-hidden rounded-xl border border-border bg-background shadow-lift"
+            className="absolute left-0 right-0 z-50 mt-1 rounded-xl border border-border bg-background shadow-lift"
           >
             <div className="border-b border-border p-2">
-              <Input
-                icon={Search}
-                placeholder={t("gp_cat_search")}
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                className="h-8 text-xs"
-              />
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
+                <input
+                  autoFocus
+                  type="text"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder={t("gp_cat_search")}
+                  className="h-8 w-full rounded-lg border border-border bg-muted/50 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
             </div>
             <div className="max-h-48 overflow-y-auto">
               <button
