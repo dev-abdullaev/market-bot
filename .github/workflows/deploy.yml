@@ -5,8 +5,6 @@ on:
     branches: [main]
 
 jobs:
-  # Render backend — triggers a new deploy on every push to main.
-  # Netlify frontend auto-deploys via its own GitHub integration (no action needed).
   deploy-backend:
     name: Render backend
     runs-on: ubuntu-latest
@@ -14,4 +12,34 @@ jobs:
       - name: Trigger Render deploy
         run: |
           curl -fsS -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}" \
-            -o /dev/null -w "HTTP %{http_code}\n"
+            -o /dev/null -w "Render: HTTP %{http_code}\n"
+
+  deploy-frontend:
+    name: Netlify frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: frontend/dist
+          production-branch: main
+          production-deploy: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
