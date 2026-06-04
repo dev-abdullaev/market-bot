@@ -9,7 +9,7 @@ services:
     dockerfilePath: ./backend/Dockerfile
     dockerContext: ./backend
     plan: free
-    healthCheckPath: /admin/         # Returns 302→/admin/login/ (3xx = healthy per Render docs)
+    healthCheckPath: /api/ping        # Returns 200 {"status":"ok"}
 
     envVars:
       - key: SECRET_KEY
