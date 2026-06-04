@@ -282,11 +282,11 @@ export default function ProductsPage() {
       <AnimatePresence initial={false}>
         {showFilters ? (
           <motion.div
-            initial={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-            animate={reduce ? { opacity: 1 } : { opacity: 1, height: "auto" }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-            transition={{ duration: 0.24 }}
-            className="mb-5 overflow-hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="mb-5"
           >
             <div className="rounded-2xl border border-border bg-background p-3 shadow-soft sm:p-4">
               <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
