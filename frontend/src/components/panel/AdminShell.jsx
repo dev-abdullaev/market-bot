@@ -175,7 +175,7 @@ export default function AdminShell() {
       if (!alive) return;
       if (store?.name) setStoreName(store.name);
       else if (me?.store_name) setStoreName(me.store_name);
-      if (me?.is_staff) setIsAdmin(true);
+      if (me?.is_staff || me?.is_superuser) setIsAdmin(true);
     })();
     return () => { alive = false; };
   }, []);
