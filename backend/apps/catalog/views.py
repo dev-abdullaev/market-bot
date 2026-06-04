@@ -13,11 +13,12 @@ from django.core.files.storage import default_storage
 from django.shortcuts import get_object_or_404
 
 from apps.stores.models import Store
-from .models import Category, GlobalProduct, Product
+from .models import Category, GlobalProduct, Packaging, Product
 from .permissions import IsOperatorWithStore
 from .serializers import (
     CategorySerializer,
     GlobalProductSerializer,
+    PackagingSerializer,
     ProductSerializer,
     PublicCategorySerializer,
     PublicStoreSerializer,
@@ -29,6 +30,17 @@ class GlobalProductPagination(PageNumberPagination):
     page_size = 20
     page_size_query_param = "page_size"
     max_page_size = 100
+
+
+class PackagingViewSet(viewsets.ModelViewSet):
+    serializer_class = PackagingSerializer
+    permission_classes = [IsOperatorWithStore]
+
+    def get_queryset(self):
+        return Packaging.objects.filter(store=self.request.user.store)
+
+    def perform_create(self, serializer):
+        serializer.save(store=self.request.user.store)
 
 
 class GlobalProductListView(ListAPIView):

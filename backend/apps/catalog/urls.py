@@ -5,6 +5,7 @@ from .views import (
     CategoryViewSet,
     GlobalProductAddView,
     GlobalProductListView,
+    PackagingViewSet,
     ProductViewSet,
     ShopCatalogView,
     ShopView,
@@ -13,6 +14,7 @@ from .views import (
 router = SimpleRouter(trailing_slash=False)
 router.register("categories", CategoryViewSet, basename="category")
 router.register("products", ProductViewSet, basename="product")
+router.register("packagings", PackagingViewSet, basename="packaging")
 
 urlpatterns = [
     # Global catalog — explicit paths BEFORE router so they win over any prefix clash

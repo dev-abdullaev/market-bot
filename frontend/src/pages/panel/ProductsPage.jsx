@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
+  ChevronRight,
   Eraser,
   Package,
   Pencil,
@@ -14,6 +15,7 @@ import { formatPrice, localName } from "../../lib/format";
 import { asList } from "../../lib/panel";
 import {
   catName,
+  flattenCategories,
   childrenOf,
   indexCategories,
   ancestryOf,
@@ -39,6 +41,73 @@ import { AddProductMenu } from "../../components/products/AddProductMenu";
 import { GlobalProductPicker } from "../../components/products/GlobalProductPicker";
 
 const STATUS_LABEL = { active: "st_active", hidden: "st_hidden", out: "st_out" };
+
+function FlatCatSelect({ categories, value, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [q, setQ] = useState("");
+  const ref = useRef(null);
+  const catIndex = useMemo(() => indexCategories(categories), [categories]);
+  const flat = useMemo(() => flattenCategories(catIndex), [catIndex]);
+  const filtered = useMemo(() => {
+    if (!q.trim()) return flat;
+    const lo = q.toLowerCase();
+    return flat.filter((c) => c.name.toLowerCase().includes(lo));
+  }, [flat, q]);
+  const selected = flat.find((c) => String(c.id) === String(value));
+
+  useEffect(() => {
+    if (!open) return;
+    const h = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button type="button" onClick={() => setOpen((v) => !v)}
+        className="flex h-11 w-full items-center justify-between gap-2 rounded-xl border border-border bg-background px-3.5 text-sm shadow-soft transition-colors hover:bg-muted cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <span className={cn("truncate", selected ? "font-semibold text-foreground" : "text-muted-foreground")}>
+          {selected ? selected.name : t("p_all_categories")}
+        </span>
+        <ChevronRight className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", open && "rotate-90")} strokeWidth={2.2} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            className="absolute left-0 right-0 z-50 mt-1 rounded-xl border border-border bg-background shadow-lift">
+            <div className="border-b border-border p-2">
+              <div className="relative">
+                <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" strokeWidth={2} />
+                <input autoFocus type="text" value={q} onChange={(e) => setQ(e.target.value)}
+                  placeholder={t("gp_cat_search")}
+                  className="h-8 w-full rounded-lg border border-border bg-muted/50 pl-8 pr-3 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring" />
+              </div>
+            </div>
+            <div className="max-h-52 overflow-y-auto">
+              <button type="button" onClick={() => { onChange(""); setOpen(false); setQ(""); }}
+                className="flex w-full items-center px-3 py-2 text-sm text-muted-foreground hover:bg-muted cursor-pointer">
+                {t("p_all_categories")}
+              </button>
+              {filtered.map((c) => (
+                <button key={c.id} type="button"
+                  onClick={() => { onChange(String(c.id)); setOpen(false); setQ(""); }}
+                  className={cn("flex w-full items-center gap-1.5 py-2 text-sm cursor-pointer hover:bg-muted",
+                    String(c.id) === String(value) ? "bg-primary/5 font-bold text-primary" : "text-foreground")}
+                  style={{ paddingLeft: `${12 + c.depth * 14}px` }}>
+                  {c.depth > 0 ? <span className="shrink-0 text-muted-foreground text-xs">└</span> : null}
+                  {c.name}
+                </button>
+              ))}
+              {!filtered.length && <p className="px-3 py-2 text-xs text-muted-foreground">{t("gp_none_found")}</p>}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 function StatusPill({ status }) {
   return (
@@ -86,9 +155,7 @@ export default function ProductsPage() {
   // Filters
   const [showFilters, setShowFilters] = useState(true);
   const [q, setQ] = useState("");
-  const [cat1, setCat1] = useState("");
-  const [cat2, setCat2] = useState("");
-  const [cat3, setCat3] = useState("");
+  const [catFilter, setCatFilter] = useState("");
   const [status, setStatus] = useState("");
 
   // Modals
@@ -98,6 +165,7 @@ export default function ProductsPage() {
   const [globalOpen, setGlobalOpen] = useState(false);
 
   const catIndex = useMemo(() => indexCategories(categories), [categories]);
+  const selectedCatId = catFilter;
 
   const load = () => {
     setLoading(true);
@@ -105,10 +173,7 @@ export default function ProductsPage() {
       api.get("/products").then((r) => asList(r.data)).catch(() => []),
       api.get("/categories").then((r) => asList(r.data)).catch(() => []),
     ])
-      .then(([p, c]) => {
-        setProducts(p);
-        setCategories(c);
-      })
+      .then(([p, c]) => { setProducts(p); setCategories(c); })
       .finally(() => setLoading(false));
   };
 
@@ -126,13 +191,6 @@ export default function ProductsPage() {
     const id = setTimeout(() => setToast(""), 3000);
     return () => clearTimeout(id);
   }, [toast]);
-
-  // Cascading category selects: reset deeper levels when a parent changes.
-  const roots = childrenOf(catIndex, null);
-  const subs = cat1 ? childrenOf(catIndex, Number(cat1)) : [];
-  const thirds = cat2 ? childrenOf(catIndex, Number(cat2)) : [];
-
-  const selectedCatId = cat3 || cat2 || cat1;
 
   // Which category ids count as "in scope" for the selected filter (self + descendants).
   const inScope = useMemo(() => {
@@ -161,15 +219,8 @@ export default function ProductsPage() {
       .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
   }, [products, q, inScope, status]);
 
-  const clearFilters = () => {
-    setQ("");
-    setCat1("");
-    setCat2("");
-    setCat3("");
-    setStatus("");
-  };
-
-  const hasFilters = q || cat1 || cat2 || cat3 || status;
+  const clearFilters = () => { setQ(""); setCatFilter(""); setStatus(""); };
+  const hasFilters = q || catFilter || status;
 
   const openNew = () => {
     setEditing(null);
@@ -245,48 +296,11 @@ export default function ProductsPage() {
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
                 />
-                <Select
-                  value={cat1}
-                  onChange={(e) => {
-                    setCat1(e.target.value);
-                    setCat2("");
-                    setCat3("");
-                  }}
-                >
-                  <option value="">{t("p_all_categories")}</option>
-                  {roots.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {catName(c)}
-                    </option>
-                  ))}
-                </Select>
-                <Select
-                  value={cat2}
-                  disabled={!subs.length}
-                  onChange={(e) => {
-                    setCat2(e.target.value);
-                    setCat3("");
-                  }}
-                >
-                  <option value="">{t("p_all_subcategories")}</option>
-                  {subs.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {catName(c)}
-                    </option>
-                  ))}
-                </Select>
-                <Select
-                  value={cat3}
-                  disabled={!thirds.length}
-                  onChange={(e) => setCat3(e.target.value)}
-                >
-                  <option value="">{t("p_all_third")}</option>
-                  {thirds.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {catName(c)}
-                    </option>
-                  ))}
-                </Select>
+                <FlatCatSelect
+                  categories={categories}
+                  value={catFilter}
+                  onChange={setCatFilter}
+                />
                 <Select
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}

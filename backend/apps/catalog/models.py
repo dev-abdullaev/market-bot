@@ -64,6 +64,22 @@ class Product(models.Model):
         return self.name_uz or self.name_ru
 
 
+class Packaging(models.Model):
+    store = models.ForeignKey("stores.Store", on_delete=models.CASCADE,
+                              related_name="packagings")
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL,
+                                 null=True, blank=True, related_name="packagings")
+    name = models.CharField(max_length=128)
+    price = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    sort_order = models.IntegerField(default=0)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+
+    def __str__(self):
+        return self.name
+
+
 class GlobalProduct(models.Model):
     """Store-independent global product catalog (shared across all stores)."""
 

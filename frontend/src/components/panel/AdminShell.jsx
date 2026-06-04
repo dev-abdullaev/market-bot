@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
+  Box,
   LayoutDashboard,
   LayoutTemplate,
   Receipt,
@@ -21,16 +22,20 @@ import { logout } from "../../lib/auth";
 import { t, getLang, setLang } from "../../lib/i18n";
 import { cn } from "../../lib/cn";
 
-const NAV = [
+const NAV_ALL = [
   { to: "/panel", end: true, icon: LayoutDashboard, key: "nav_analytics" },
   { to: "/panel/orders", icon: Receipt, key: "nav_orders" },
   { to: "/panel/products", icon: Package, key: "nav_products" },
   { to: "/panel/menu", icon: LayoutTemplate, key: "nav_menu" },
-  { to: "/panel/categories", icon: Tags, key: "nav_categories" },
   { to: "/panel/clients", icon: Users, key: "nav_clients" },
   { to: "/panel/broadcast", icon: Megaphone, key: "nav_broadcast" },
   { to: "/panel/promos", icon: Ticket, key: "nav_promos" },
   { to: "/panel/settings", icon: Settings, key: "nav_settings" },
+];
+
+const NAV_ADMIN = [
+  { to: "/panel/categories", icon: Tags, key: "nav_categories" },
+  { to: "/panel/fasovka", icon: Box, key: "nav_fasovka" },
 ];
 
 /** Single nav row with a shared-layout sliding active pill. */
@@ -87,15 +92,16 @@ function BrandMark() {
   );
 }
 
-function SidebarBody({ onNavigate }) {
+function SidebarBody({ onNavigate, isAdmin }) {
   const nav = useNavigate();
+  const nav_items = isAdmin ? [...NAV_ALL, ...NAV_ADMIN] : NAV_ALL;
   return (
     <div className="flex h-full flex-col gap-2">
       <div className="px-2 pb-4 pt-5">
         <BrandMark />
       </div>
       <nav className="flex flex-1 flex-col gap-1 px-3">
-        {NAV.map((item) => (
+        {nav_items.map((item) => (
           <NavItem key={item.to} item={item} onNavigate={onNavigate} />
         ))}
       </nav>
@@ -154,31 +160,24 @@ function LangToggle() {
 
 export default function AdminShell() {
   const [storeName, setStoreName] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
   const [drawer, setDrawer] = useState(false);
   const location = useLocation();
   const reduce = useReducedMotion();
 
-  // Resolve the store name from /stores/me, falling back to /auth/me.
   useEffect(() => {
     let alive = true;
     (async () => {
-      const store = await api
-        .get("/stores/me")
-        .then((r) => r.data)
-        .catch(() => null);
-      if (alive && store?.name) {
-        setStoreName(store.name);
-        return;
-      }
-      const me = await api
-        .get("/auth/me")
-        .then((r) => r.data)
-        .catch(() => null);
-      if (alive && me?.store_name) setStoreName(me.store_name);
+      const [store, me] = await Promise.all([
+        api.get("/stores/me").then((r) => r.data).catch(() => null),
+        api.get("/auth/me").then((r) => r.data).catch(() => null),
+      ]);
+      if (!alive) return;
+      if (store?.name) setStoreName(store.name);
+      else if (me?.store_name) setStoreName(me.store_name);
+      if (me?.is_staff) setIsAdmin(true);
     })();
-    return () => {
-      alive = false;
-    };
+    return () => { alive = false; };
   }, []);
 
   // Close the mobile drawer whenever the route changes.
@@ -191,7 +190,7 @@ export default function AdminShell() {
     <div className="min-h-svh bg-muted">
       {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-border bg-background lg:block">
-        <SidebarBody />
+        <SidebarBody isAdmin={isAdmin} />
       </aside>
 
       {/* Mobile drawer */}
@@ -221,7 +220,7 @@ export default function AdminShell() {
               >
                 <X className="h-5 w-5" strokeWidth={2.3} />
               </button>
-              <SidebarBody onNavigate={() => setDrawer(false)} />
+              <SidebarBody onNavigate={() => setDrawer(false)} isAdmin={isAdmin} />
             </motion.aside>
           </>
         ) : null}

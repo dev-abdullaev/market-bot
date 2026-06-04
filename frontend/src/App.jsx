@@ -12,6 +12,7 @@ import ClientsPage from "./pages/panel/ClientsPage";
 import BroadcastPage from "./pages/panel/BroadcastPage";
 import PromosPage from "./pages/panel/PromosPage";
 import SettingsPage from "./pages/panel/SettingsPage";
+import FasovkaPage from "./pages/panel/FasovkaPage";
 import RegisterStore from "./pages/webapp/RegisterStore";
 import ProductForm from "./pages/webapp/ProductForm";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="broadcast" element={<BroadcastPage />} />
           <Route path="promos" element={<PromosPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          <Route path="fasovka" element={<FasovkaPage />} />
         </Route>
 
         {/* Default → demo store */}
