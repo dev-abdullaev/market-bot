@@ -48,3 +48,25 @@ class OrderItem(models.Model):
     price = models.DecimalField(max_digits=12, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
     line_total = models.DecimalField(max_digits=12, decimal_places=2)
+
+
+class Segment(models.Model):
+    store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, related_name="segments")
+    name = models.CharField(max_length=64)
+    sort_order = models.IntegerField(default=1)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+
+    def __str__(self):
+        return self.name
+
+
+class StoreCustomer(models.Model):
+    """Per-store customer profile — segment assignment."""
+    store = models.ForeignKey("stores.Store", on_delete=models.CASCADE, related_name="store_customers")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="store_profiles")
+    segment = models.ForeignKey(Segment, on_delete=models.SET_NULL, null=True, blank=True, related_name="customers")
+
+    class Meta:
+        unique_together = [("store", "customer")]

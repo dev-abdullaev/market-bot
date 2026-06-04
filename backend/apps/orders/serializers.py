@@ -4,9 +4,15 @@ from rest_framework import serializers
 from apps.catalog.models import Product
 from apps.orders.models import Customer
 from apps.notifications.orders import notify_new_order
-from .models import Order, OrderItem
+from .models import Order, OrderItem, Segment
 
 logger = logging.getLogger(__name__)
+
+
+class SegmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Segment
+        fields = ["id", "name", "sort_order"]
 
 
 class OrderItemInput(serializers.Serializer):

@@ -2,7 +2,7 @@ import hmac
 import logging
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import timedelta, date as date_type, datetime
-from django.db.models import Sum, Count, Q
+from django.db.models import Sum, Count, Q, Max
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -15,8 +15,8 @@ from apps.accounts.models import User
 from apps.catalog.permissions import IsOperatorWithStore
 from apps.notifications.telegram import send_message
 from apps.notifications.broadcast import broadcast_to_customers
-from .models import Order, OrderItem
-from .serializers import OrderCreateSerializer, OrderSerializer
+from .models import Order, OrderItem, Customer, Segment, StoreCustomer
+from .serializers import OrderCreateSerializer, OrderSerializer, SegmentSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -350,23 +350,90 @@ class StatsView(APIView):
 class ClientsView(APIView):
     permission_classes = [IsOperatorWithStore]
 
+    _PAGE_SIZE_MAX = 50
+    _PAGE_SIZE_DEFAULT = 15
+
     def get(self, request):
         store = request.user.store
         if not store:
             return Response({"detail": "No store"}, status=404)
-        rows = (Order.objects.filter(store=store, customer__isnull=False)
-                .values("customer_id", "customer__full_name", "customer__phone",
-                        "customer__telegram_id")
-                .annotate(orders_count=Count("id"), total=Sum("total_amount"))
-                .order_by("-total"))
-        return Response([{
-            "id": r["customer_id"],
-            "full_name": r["customer__full_name"],
-            "phone": r["customer__phone"],
-            "telegram_id": r["customer__telegram_id"],
-            "orders_count": r["orders_count"],
-            "total_spent": f"{r['total'] or 0:.2f}",
-        } for r in rows])
+
+        # --- query params ---
+        q = (request.query_params.get("q") or "").strip()
+        status_filter = request.query_params.get("status", "").strip()
+        try:
+            page = max(1, int(request.query_params.get("page", 1)))
+        except (ValueError, TypeError):
+            page = 1
+        try:
+            page_size = min(self._PAGE_SIZE_MAX,
+                            max(1, int(request.query_params.get("page_size", self._PAGE_SIZE_DEFAULT))))
+        except (ValueError, TypeError):
+            page_size = self._PAGE_SIZE_DEFAULT
+
+        # --- aggregate orders per customer for this store ---
+        thirty_days_ago = timezone.now() - timedelta(days=30)
+        order_qs = (
+            Order.objects
+            .filter(store=store, customer__isnull=False)
+            .values("customer_id", "customer__full_name", "customer__phone", "customer__telegram_id")
+            .annotate(
+                orders_count=Count("id"),
+                total=Sum("total_amount"),
+                last_order_date=Max("created_at__date"),
+                recent_count=Count("id", filter=Q(created_at__gte=thirty_days_ago)),
+            )
+            .order_by("-total")
+        )
+
+        # --- optional search ---
+        if q:
+            order_qs = order_qs.filter(
+                Q(customer__full_name__icontains=q) | Q(customer__phone__icontains=q)
+            )
+
+        # --- segment lookup: {customer_id: (segment_id, segment_name)} ---
+        sc_map = {
+            sc.customer_id: (sc.segment_id, sc.segment.name if sc.segment_id else None)
+            for sc in StoreCustomer.objects.filter(store=store).select_related("segment")
+        }
+
+        # --- build result rows (before status filter) ---
+        rows = []
+        for r in order_qs:
+            cid = r["customer_id"]
+            recent_count = r["recent_count"] or 0
+            cust_status = "active" if recent_count > 0 else "inactive"
+            seg_id, seg_name = sc_map.get(cid, (None, None))
+            last_date = r["last_order_date"]
+            rows.append({
+                "id": cid,
+                "full_name": r["customer__full_name"],
+                "phone": r["customer__phone"],
+                "telegram_id": r["customer__telegram_id"],
+                "orders_count": r["orders_count"],
+                "total_spent": f"{r['total'] or Decimal('0'):.2f}",
+                "last_order_date": str(last_date) if last_date else None,
+                "status": cust_status,
+                "segment_id": seg_id,
+                "segment_name": seg_name,
+            })
+
+        # --- status filter applied in Python (avoids extra subquery complexity) ---
+        if status_filter in ("active", "inactive"):
+            rows = [r for r in rows if r["status"] == status_filter]
+
+        # --- paginate ---
+        count = len(rows)
+        offset = (page - 1) * page_size
+        page_rows = rows[offset: offset + page_size]
+
+        return Response({
+            "count": count,
+            "next": (offset + page_size) < count,
+            "previous": page > 1,
+            "results": page_rows,
+        })
 
 
 class BroadcastView(APIView):
@@ -381,3 +448,56 @@ class BroadcastView(APIView):
             return Response({"detail": "Text required"}, status=400)
         sent = broadcast_to_customers(store, text)
         return Response({"sent": sent})
+
+
+class SegmentListCreateView(APIView):
+    permission_classes = [IsOperatorWithStore]
+
+    def get(self, request):
+        store = request.user.store
+        qs = Segment.objects.filter(store=store)
+        return Response(SegmentSerializer(qs, many=True).data)
+
+    def post(self, request):
+        store = request.user.store
+        ser = SegmentSerializer(data=request.data)
+        ser.is_valid(raise_exception=True)
+        segment = ser.save(store=store)
+        return Response(SegmentSerializer(segment).data, status=status.HTTP_201_CREATED)
+
+
+class SegmentDestroyView(APIView):
+    permission_classes = [IsOperatorWithStore]
+
+    def delete(self, request, pk):
+        store = request.user.store
+        segment = get_object_or_404(Segment, pk=pk, store=store)
+        segment.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CustomerSegmentUpdateView(APIView):
+    permission_classes = [IsOperatorWithStore]
+
+    def patch(self, request, customer_id):
+        store = request.user.store
+        customer = get_object_or_404(Customer, pk=customer_id)
+
+        segment_id = request.data.get("segment_id")
+
+        # Validate segment belongs to this store (or null to clear)
+        if segment_id is not None:
+            segment = get_object_or_404(Segment, pk=segment_id, store=store)
+        else:
+            segment = None
+
+        sc, _ = StoreCustomer.objects.get_or_create(store=store, customer=customer)
+        sc.segment = segment
+        sc.save(update_fields=["segment"])
+
+        return Response({
+            "customer_id": customer.id,
+            "store_id": store.id,
+            "segment_id": sc.segment_id,
+            "segment_name": sc.segment.name if sc.segment else None,
+        })
