@@ -281,15 +281,19 @@ export function ProductModal({
   const isEdit = Boolean(product?.id);
   const [tab, setTab] = useState("main");
   const [f, setF] = useState(EMPTY);
-  // Image slots: existing URLs (kept) + newly picked Files (uploaded on save).
-  const [slots, setSlots] = useState([]); // [{file?, url?, preview}]
+  const [slots, setSlots] = useState([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
+  const [packagings, setPackagings] = useState([]);
 
   const catOptions = useMemo(
     () => flattenCategories(indexCategories(categories || [])),
     [categories]
   );
+
+  useEffect(() => {
+    api.get("/packagings").then((r) => setPackagings(Array.isArray(r.data) ? r.data : [])).catch(() => {});
+  }, []);
 
   // (Re)seed form whenever the modal opens for a (new or existing) product.
   // Syncing form state to the opened product is exactly what this effect is
@@ -489,7 +493,7 @@ export function ProductModal({
       title={isEdit ? t("edit_product_title") : t("add_product_title")}
       header={header}
       footer={footer}
-      size="xl"
+      size="2xl"
     >
       <ErrorAlert message={err} className="mb-3" />
       <AnimatePresence mode="wait" initial={false}>
@@ -591,11 +595,17 @@ export function ProductModal({
               </FieldRow>
               <FieldRow label={t("field_packaging")} htmlFor="pm-pack">
                 <Select id="pm-pack" value={f.packaging} onChange={set("packaging")}>
-                  {PACKAGING.map((p) => (
-                    <option key={p.value} value={p.value}>
-                      {t(p.key)}
-                    </option>
-                  ))}
+                  <option value="">{t("pack_none")}</option>
+                  {packagings.length > 0
+                    ? packagings.map((p) => (
+                        <option key={p.id} value={p.name}>
+                          {p.name}{Number(p.price) > 0 ? ` (+${new Intl.NumberFormat("ru-RU").format(p.price)} so'm)` : ""}
+                        </option>
+                      ))
+                    : PACKAGING.filter((p) => p.value !== "Idishsiz").map((p) => (
+                        <option key={p.value} value={p.value}>{t(p.key)}</option>
+                      ))
+                  }
                 </Select>
               </FieldRow>
             </div>
