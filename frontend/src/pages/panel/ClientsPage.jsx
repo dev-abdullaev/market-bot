@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Pencil, Plus, Search, Trash2, Users } from "lucide-react";
+import { Pencil, Search, Users } from "lucide-react";
 import api from "../../lib/api";
 import { t } from "../../lib/i18n";
 import { formatPrice } from "../../lib/format";
@@ -84,129 +84,6 @@ function AssignSegmentModal({ open, onOpenChange, customer, segments, onAssigned
         </Select>
       </div>
     </Modal>
-  );
-}
-
-/* ─── Add segment modal ─────────────────────────────────────────── */
-function AddSegmentModal({ open, onOpenChange, onSaved, segmentsCount }) {
-  const [name, setName] = useState("");
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => { if (open) setName(""); }, [open]);
-
-  const save = async () => {
-    setSaving(true);
-    try {
-      const nextNum = segmentsCount + 1;
-      await api.post("/admin/segments", {
-        name: name.trim() || `${nextNum}-segment`,
-        sort_order: nextNum,
-      });
-      onSaved?.();
-      onOpenChange(false);
-    } catch { /* ignore */ }
-    finally { setSaving(false); }
-  };
-
-  const footer = (
-    <div className="flex justify-end gap-2">
-      <Button variant="outline" onClick={() => onOpenChange(false)} disabled={saving}>{t("back")}</Button>
-      <Button onClick={save} disabled={saving} className="min-w-28">
-        {saving ? <Spinner size={16} className="text-primary-foreground" /> : null}
-        {t("add")}
-      </Button>
-    </div>
-  );
-
-  return (
-    <Modal open={open} onOpenChange={onOpenChange} title={t("segment_add")} footer={footer} size="md">
-      <div>
-        <Label htmlFor="seg-name">{t("name")}</Label>
-        <Input
-          id="seg-name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder={t("segment_name_ph")}
-          onKeyDown={(e) => e.key === "Enter" && save()}
-        />
-        <p className="mt-1.5 text-xs text-muted-foreground">{t("segment_hint")}</p>
-      </div>
-    </Modal>
-  );
-}
-
-/* ─── Segments section ──────────────────────────────────────────── */
-function SegmentsSection({ segments, onRefresh }) {
-  const reduce = useReducedMotion();
-  const [addOpen, setAddOpen] = useState(false);
-  const [busyId, setBusyId] = useState(null);
-
-  const remove = async (id) => {
-    setBusyId(id);
-    try {
-      await api.delete(`/admin/segments/${id}`);
-      onRefresh();
-    } catch { /* ignore */ }
-    finally { setBusyId(null); }
-  };
-
-  return (
-    <div className="mt-8">
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-base font-extrabold text-foreground">{t("client_segments_title")}</h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">{t("segment_base_hint")}</p>
-        </div>
-        <Button size="sm" onClick={() => setAddOpen(true)}>
-          <Plus className="h-4 w-4" strokeWidth={2.4} />
-          {t("segment_add")}
-        </Button>
-      </div>
-
-      <div className="overflow-hidden rounded-2xl border border-border bg-background shadow-soft">
-        <table className="w-full text-sm">
-          <thead className="border-b border-border bg-muted/50 text-left text-xs font-bold uppercase tracking-wide text-muted-foreground">
-            <tr>
-              <th className="px-4 py-3 w-12">№</th>
-              <th className="px-4 py-3">{t("name")}</th>
-              <th className="px-4 py-3 text-right">{t("col_actions")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {segments.length === 0 ? (
-              <tr>
-                <td colSpan={3} className="px-4 py-8 text-center text-sm text-muted-foreground">
-                  {t("segment_empty")}
-                </td>
-              </tr>
-            ) : segments.map((s, i) => (
-              <motion.tr key={s.id}
-                initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 28, delay: i * 0.04 }}
-                className="border-b border-border/60 last:border-0 hover:bg-muted/30">
-                <td className="px-4 py-3 font-semibold text-muted-foreground">{i + 1}</td>
-                <td className="px-4 py-3 font-bold text-foreground">{s.name}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="flex items-center justify-end gap-1.5">
-                    {i === 0 ? null : (
-                      <ConfirmDelete busy={busyId === s.id} onConfirm={() => remove(s.id)} className="h-8" />
-                    )}
-                  </div>
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <AddSegmentModal
-        open={addOpen}
-        onOpenChange={setAddOpen}
-        onSaved={onRefresh}
-        segmentsCount={segments.length}
-      />
-    </div>
   );
 }
 
@@ -380,14 +257,12 @@ export default function ClientsPage() {
       </div>
 
       {/* Segments section */}
-      <SegmentsSection segments={segments} onRefresh={loadSegments} />
-
       <AssignSegmentModal
         open={assignOpen}
         onOpenChange={setAssignOpen}
         customer={assignTarget}
         segments={segments}
-        onAssigned={() => { loadClients(); loadSegments(); }}
+        onAssigned={loadClients}
       />
     </div>
   );
