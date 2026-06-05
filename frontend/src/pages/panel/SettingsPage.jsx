@@ -80,6 +80,19 @@ function ToggleRow({ label, hint, checked, onChange, compact }) {
   );
 }
 
+/* Clean enable bar: title left + toggle right in a bordered box (CLICK-MERCHANT style). */
+function EnableBar({ label, checked, onChange }) {
+  return (
+    <div className={cn(
+      "flex items-center justify-between rounded-xl border px-4 py-3 transition-colors",
+      checked ? "border-primary/40 bg-primary/5" : "border-border bg-muted/30"
+    )}>
+      <p className="text-sm font-bold text-foreground">{label}</p>
+      <Toggle checked={checked} onChange={onChange} />
+    </div>
+  );
+}
+
 /* Accordion payment card */
 function PayCard({ icon: Icon, label, hint, configured, children }) {
   const [open, setOpen] = useState(false);
@@ -653,7 +666,7 @@ function TulovTab({ f, setF, onSave, saving }) {
       {/* Nalichnye */}
       <PayCard icon={CreditCard} label="Nalichnye" hint="Oplatа nalichnymi pri poluchenii zakaza."
         configured={f.cash_enabled}>
-        <ToggleRow compact label="Naqd to'lov" checked={f.cash_enabled !== false}
+        <EnableBar label="Naqd to'lov" checked={f.cash_enabled !== false}
           onChange={(v) => setF((s) => ({ ...s, cash_enabled: v }))} />
         <Hint>O'chirilsa, mijozlar naqd to'lovni tanlay olmaydi.</Hint>
       </PayCard>
@@ -662,7 +675,7 @@ function TulovTab({ f, setF, onSave, saving }) {
       <PayCard icon={CreditCard} label="Karta" hint="Оплата переводом на карту магазина с отправкой чека."
         configured={!!(f.card_number)}>
         <div className="space-y-3">
-          <ToggleRow compact label="Kartani yoqish" checked={f.card_enabled} onChange={(v) => setF((s) => ({ ...s, card_enabled: v }))} />
+          <EnableBar label="Kartani yoqish" checked={f.card_enabled} onChange={(v) => setF((s) => ({ ...s, card_enabled: v }))} />
           <Field label="Karta nomi">
             <Input value={f.card_payment_title || ""} placeholder="Масalan: HUMO / UZCARD"
               onChange={(e) => setF((s) => ({ ...s, card_payment_title: e.target.value }))} />
@@ -699,7 +712,7 @@ function TulovTab({ f, setF, onSave, saving }) {
       <PayCard icon={CreditCard} label="Bank" hint="Оплата по банковским реквизитам магазина."
         configured={!!(nsSC("bank", "account", ""))}>
         <div className="space-y-3">
-          <ToggleRow compact label="Bankni yoqish" checked={nsSC("bank", "enabled", false)}
+          <EnableBar label="Bankni yoqish" checked={nsSC("bank", "enabled", false)}
             onChange={nsf("bank")("enabled")} />
           <Row className="sm:grid-cols-2">
             <Field label="P/C"><Input value={nsSC("bank", "account", "")} placeholder="2020..."
@@ -727,7 +740,7 @@ function TulovTab({ f, setF, onSave, saving }) {
       <PayCard icon={CreditCard} label="Click" hint="Персональная ссылка для перевода клиента в оплату Click."
         configured={!!(f.click_url || nsSC("click", "merchant_id", ""))}>
         <div className="space-y-3">
-          <ToggleRow compact label="Click ni yoqish" checked={nsSC("click", "enabled", false)}
+          <EnableBar label="Click ni yoqish" checked={nsSC("click", "enabled", false)}
             onChange={nsf("click")("enabled")} />
           <Field label="Click URL">
             <Input value={f.click_url || ""} placeholder="https://..."
@@ -755,7 +768,7 @@ function TulovTab({ f, setF, onSave, saving }) {
       <PayCard icon={CreditCard} label="Payme" hint="Ссылка оплаты и Merchant API для автоматического подтверждения заказов."
         configured={f.payme_enabled}>
         <div className="space-y-3">
-          <ToggleRow compact label="Payme ni yoqish" checked={f.payme_enabled}
+          <EnableBar label="Payme ni yoqish" checked={f.payme_enabled}
             onChange={(v) => setF((s) => ({ ...s, payme_enabled: v }))} />
           <Field label="Payme URL">
             <Input value={f.payme_url || ""} placeholder="https://..."
@@ -780,7 +793,7 @@ function TulovTab({ f, setF, onSave, saving }) {
       <PayCard icon={CreditCard} label="Uzum" hint="Ссылка для перенаправления клиента на оплату через Uzum."
         configured={!!(f.uzum_url)}>
         <div className="space-y-3">
-          <ToggleRow compact label="Uzum ni yoqish" checked={nsSC("uzum", "enabled", false)}
+          <EnableBar label="Uzum ni yoqish" checked={nsSC("uzum", "enabled", false)}
             onChange={nsf("uzum")("enabled")} />
           <Field label="Uzum URL">
             <Input value={f.uzum_url || ""} placeholder="https://..."
@@ -805,7 +818,7 @@ function TulovTab({ f, setF, onSave, saving }) {
       <PayCard icon={CreditCard} label="Xazna" hint="Ссылка для перенаправления клиента на оплату через Xazna."
         configured={!!(nsSC("xazna", "url", ""))}>
         <div className="space-y-3">
-          <ToggleRow compact label="Xazna ni yoqish" checked={nsSC("xazna", "enabled", false)}
+          <EnableBar label="Xazna ni yoqish" checked={nsSC("xazna", "enabled", false)}
             onChange={nsf("xazna")("enabled")} />
           <Field label="Xazna URL">
             <Input value={nsSC("xazna", "url", "")} placeholder="https://..."
