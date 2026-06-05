@@ -44,6 +44,7 @@ export default function Storefront() {
   }, [load]);
 
   const currency = store?.currency_code || "UZS";
+  const cardMode = store?.showcase_config?.product_card_mode || "wide";
   const handleAdd = useCallback((product) => cart.add(product, 1), [cart]);
 
   return (
@@ -97,6 +98,7 @@ export default function Storefront() {
               category={category}
               currency={currency}
               onAdd={handleAdd}
+              cardMode={cardMode}
             />
           ))}
       </main>

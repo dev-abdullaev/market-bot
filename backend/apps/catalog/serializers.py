@@ -37,6 +37,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    is_available = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = [
@@ -49,14 +51,33 @@ class ProductSerializer(serializers.ModelSerializer):
             "barcode", "ikpu",
             "weight_kg", "length_cm", "width_cm", "height_cm",
             "seasonality", "images",
+            "stock_quantity", "is_available",
         ]
+
+    def get_is_available(self, obj):
+        product_cfg = obj.store.showcase_config.get("product", {})
+        if product_cfg.get("stock_tracking"):
+            threshold = product_cfg.get("stock_threshold", 0)
+            if obj.stock_quantity <= threshold:
+                return False
+        return obj.in_stock
 
 
 class PublicProductSerializer(serializers.ModelSerializer):
+    is_available = serializers.SerializerMethodField()
+
     class Meta:
         model = Product
         fields = ["id", "name_ru", "name_uz", "description_ru", "description_uz",
-                  "price", "unit", "photo_url"]
+                  "price", "unit", "photo_url", "stock_quantity", "is_available"]
+
+    def get_is_available(self, obj):
+        product_cfg = obj.store.showcase_config.get("product", {})
+        if product_cfg.get("stock_tracking"):
+            threshold = product_cfg.get("stock_threshold", 0)
+            if obj.stock_quantity <= threshold:
+                return False
+        return obj.in_stock
 
 
 class PackagingSerializer(serializers.ModelSerializer):
@@ -96,4 +117,10 @@ class PublicCategorySerializer(serializers.ModelSerializer):
 
     def get_products(self, obj):
         qs = obj.products.filter(in_stock=True, is_hidden=False)
+        # When stock_tracking is enabled, also exclude products whose
+        # stock_quantity is at or below the configured threshold.
+        product_cfg = obj.store.showcase_config.get("product", {})
+        if product_cfg.get("stock_tracking"):
+            threshold = product_cfg.get("stock_threshold", 0)
+            qs = qs.filter(stock_quantity__gt=threshold)
         return PublicProductSerializer(qs, many=True).data

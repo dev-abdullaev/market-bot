@@ -26,6 +26,27 @@ from .serializers import (
 from .services import add_global_products_to_store, import_products
 
 
+class UploadView(APIView):
+    """Generic file upload endpoint. POST a multipart `file` field.
+
+    Saves to ``uploads/<store_id>_<basename>`` via default_storage and
+    returns ``{"url": "<absolute url>"}``.
+    """
+
+    permission_classes = [IsOperatorWithStore]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        f = request.FILES.get("file")
+        if not f:
+            return Response({"detail": "No file"}, status=400)
+        safe_name = os.path.basename(f.name)
+        store_id = request.user.store_id
+        path = default_storage.save(f"uploads/{store_id}_{safe_name}", f)
+        url = request.build_absolute_uri(default_storage.url(path))
+        return Response({"url": url})
+
+
 class GlobalProductPagination(PageNumberPagination):
     page_size = 20
     page_size_query_param = "page_size"
@@ -80,6 +101,19 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(store=self.request.user.store)
+
+    @action(detail=True, methods=["post"], parser_classes=[MultiPartParser, FormParser])
+    def photo(self, request, pk=None):
+        category = self.get_object()
+        f = request.FILES.get("photo")
+        if not f:
+            return Response({"detail": "No file"}, status=400)
+        safe_name = os.path.basename(f.name)
+        path = default_storage.save(f"categories/{category.id}_{safe_name}", f)
+        url = request.build_absolute_uri(default_storage.url(path))
+        category.image_url = url
+        category.save(update_fields=["image_url"])
+        return Response({"image_url": url})
 
 
 class ProductViewSet(viewsets.ModelViewSet):

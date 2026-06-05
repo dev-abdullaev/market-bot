@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  CalendarClock, Clock, History, ImagePlus, ListChecks,
-  Megaphone, Plus, Send, Trash2,
+  CalendarClock, Clock, History, ListChecks,
+  Megaphone, Plus, Send,
 } from "lucide-react";
 import api from "../../lib/api";
 import { t, tf } from "../../lib/i18n";
@@ -203,6 +203,7 @@ function QueueTab() {
     api.get("/admin/broadcast/queue").then((r) => setItems(asList(r.data)))
       .catch(() => setItems([])).finally(() => setLoading(false));
   };
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => { load(); }, []);
 
   const cancel = async (id) => {
@@ -278,6 +279,7 @@ function HistoryTab() {
 /* ── Modal ───────────────────────────────────────────────── */
 function BroadcastModal({ open, onOpenChange, storeName, onSent }) {
   const [tab, setTab] = useState("add");
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { if (open) setTab("add"); }, [open]);
 
   const header = (

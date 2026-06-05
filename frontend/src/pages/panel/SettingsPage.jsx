@@ -1,16 +1,15 @@
-import { useEffect, useRef, useState } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
-  BarChart2, Bell, ChevronDown, ChevronUp, Gift, Globe,
+  BarChart2, ChevronDown, ChevronUp, Gift, Globe,
   ImagePlus, Package, Palette, Send, Settings, Truck,
-  CreditCard, Megaphone, Star, Image,
+  CreditCard, Megaphone, Image, Trash2,
 } from "lucide-react";
 import api from "../../lib/api";
 import { t } from "../../lib/i18n";
 import { cn } from "../../lib/cn";
 import { asList } from "../../lib/panel";
 import { catName, indexCategories, childrenOf } from "../../lib/products";
-import { localName } from "../../lib/format";
 import { Button } from "../../components/ui/Button";
 import { Input, Label, Select } from "../../components/ui/Input";
 import { Spinner } from "../../components/ui/Spinner";
@@ -18,6 +17,42 @@ import { PageHeader, Toast, Toggle } from "../../components/panel/common";
 import { Card } from "../../components/ui/Card";
 
 /* ── helpers ─────────────────────────────────────────────────── */
+async function uploadFile(file) {
+  const fd = new FormData();
+  fd.append("file", file);
+  const { data } = await api.post("/upload", fd);
+  return data?.url;
+}
+
+/* Image upload box: click → file picker → uploads → calls onUploaded(url). */
+function ImageUploadBox({ url, onUploaded, label, className }) {
+  const ref = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const pick = async (file) => {
+    if (!file) return;
+    setBusy(true);
+    try { const u = await uploadFile(file); if (u) onUploaded(u); }
+    catch { /* ignore */ }
+    finally { setBusy(false); }
+  };
+  return (
+    <div
+      onClick={() => ref.current?.click()}
+      className={cn("rounded-2xl border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center py-10 gap-2 cursor-pointer hover:bg-muted/60 transition-colors", className)}>
+      {busy ? (
+        <Spinner size={24} />
+      ) : url ? (
+        <img src={url} alt="" className="h-20 max-w-[80%] object-contain rounded-xl" />
+      ) : (
+        <ImagePlus className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
+      )}
+      <p className="text-sm text-muted-foreground font-semibold">{label}</p>
+      <input ref={ref} type="file" accept="image/*" className="sr-only"
+        onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
+    </div>
+  );
+}
+
 const sc = (f) => f.showcase_config || {};
 const getSC = (f, key, def) => sc(f)[key] ?? def;
 const setSCFn = (setF, key) => (val) =>
@@ -180,20 +215,8 @@ function UmumiyTab({ f, setF, onSave, saving }) {
       {/* Logo */}
       <div>
         <SectionTitle>Logotip magaza</SectionTitle>
-        <div className="rounded-2xl border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center py-10 gap-2 cursor-pointer hover:bg-muted/60 transition-colors" onClick={() => {}}>
-          {f.logo_url ? (
-            <img src={f.logo_url} alt="logo" className="h-20 w-20 object-contain rounded-xl" />
-          ) : (
-            <ImagePlus className="h-8 w-8 text-muted-foreground" strokeWidth={1.5} />
-          )}
-          <p className="text-sm text-muted-foreground font-semibold">{t("settings_choose_logo")}</p>
-        </div>
-        <div className="mt-2">
-          <Field label={t("settings_logo_url")}>
-            <Input value={f.logo_url || ""} onChange={(e) => setF((s) => ({ ...s, logo_url: e.target.value }))}
-              placeholder="https://..." />
-          </Field>
-        </div>
+        <ImageUploadBox url={f.logo_url} label={t("settings_choose_logo")}
+          onUploaded={(url) => setF((s) => ({ ...s, logo_url: url }))} />
       </div>
       <div>
         <SectionTitle>Ko'rinish rejimi</SectionTitle>
@@ -478,31 +501,23 @@ function DizaynTab({ f, setF, onSave, saving }) {
 function BannerlarTab({ f, setF, onSave, saving }) {
   const banners = getSC(f, "banner_images", []);
   const setBanners = setSCFn(setF, "banner_images");
-  const [url, setUrl] = useState("");
-
-  const addBanner = () => {
-    if (!url.trim()) return;
-    setBanners([...banners, url.trim()]);
-    setUrl("");
-  };
   const removeBanner = (i) => setBanners(banners.filter((_, idx) => idx !== i));
 
   return (
     <div className="space-y-5">
       <p className="text-sm text-muted-foreground">{t("settings_banners_hint")}</p>
-      <div className="space-y-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         {banners.map((b, i) => (
-          <div key={i} className="flex items-center gap-3 rounded-xl border border-border p-2">
-            <img src={b} alt="" className="h-12 w-20 rounded-lg object-cover border border-border flex-shrink-0" onError={(e) => e.target.style.display = 'none'} />
-            <span className="flex-1 truncate text-xs text-muted-foreground">{b}</span>
-            <Button variant="ghost" size="iconSm" onClick={() => removeBanner(i)}>×</Button>
+          <div key={i} className="relative overflow-hidden rounded-xl border border-border">
+            <img src={b} alt="" className="h-32 w-full object-cover" onError={(e) => e.target.style.display = 'none'} />
+            <button type="button" onClick={() => removeBanner(i)}
+              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-lg bg-foreground/70 text-background hover:bg-destructive cursor-pointer">
+              <Trash2 className="h-3.5 w-3.5" strokeWidth={2.4} />
+            </button>
           </div>
         ))}
-      </div>
-      <div className="flex gap-2">
-        <Input placeholder="https://..." value={url} onChange={(e) => setUrl(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && addBanner()} />
-        <Button onClick={addBanner} variant="outline">+</Button>
+        <ImageUploadBox label={t("settings_banner_add")} className="h-32 py-0"
+          onUploaded={(url) => setBanners([...banners, url])} />
       </div>
       <SaveBar saving={saving} onSave={onSave} />
     </div>
@@ -510,72 +525,80 @@ function BannerlarTab({ f, setF, onSave, saving }) {
 }
 
 /* ── 5. Kategoriya rasmlari ──────────────────────────────────── */
+function CatImageRow({ cat, selected, onSelect, onUploaded }) {
+  const ref = useRef(null);
+  const [busy, setBusy] = useState(false);
+  const pick = async (file) => {
+    if (!file) return;
+    setBusy(true);
+    try {
+      const fd = new FormData(); fd.append("photo", file);
+      const { data } = await api.post(`/categories/${cat.id}/photo`, fd);
+      if (data?.image_url) onUploaded(cat.id, data.image_url);
+    } catch { /* ignore */ }
+    finally { setBusy(false); }
+  };
+  return (
+    <div className={cn("w-full flex items-center gap-3 rounded-xl p-2.5 transition-colors",
+      selected ? "bg-primary/5 border border-primary/30" : "hover:bg-muted border border-transparent")}>
+      <button type="button" onClick={() => ref.current?.click()} title={t("settings_cat_upload")}
+        className="h-10 w-10 shrink-0 rounded-xl border border-border bg-muted flex items-center justify-center overflow-hidden cursor-pointer hover:border-primary/50">
+        {busy ? <Spinner size={14} />
+          : cat.image_url ? <img src={cat.image_url} alt="" className="h-full w-full object-cover" />
+          : <ImagePlus className="h-4 w-4 text-muted-foreground" strokeWidth={2} />}
+      </button>
+      <button type="button" onClick={() => onSelect(cat.id)}
+        className="flex-1 truncate text-left text-sm font-semibold text-foreground cursor-pointer">
+        {catName(cat)}
+      </button>
+      <input ref={ref} type="file" accept="image/*" className="sr-only"
+        onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ""; }} />
+    </div>
+  );
+}
+
+function CatColPane({ title, items, selected, onSelect, onUploaded }) {
+  return (
+    <div className="flex flex-col rounded-2xl border border-border overflow-hidden">
+      <div className="border-b border-border bg-muted/50 px-4 py-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+        {title}
+      </div>
+      <div className="flex-1 overflow-y-auto p-2 min-h-64 max-h-80 space-y-1">
+        {items.length === 0
+          ? <div className="flex h-full items-center justify-center px-2 text-center text-xs text-muted-foreground">👈 {t("settings_cat_pick_prev")}</div>
+          : items.map((c) => (
+            <CatImageRow key={c.id} cat={c} selected={selected === c.id}
+              onSelect={onSelect} onUploaded={onUploaded} />
+          ))}
+      </div>
+    </div>
+  );
+}
+
 function KategoriyaRasmlariTab({ categories }) {
-  const catIndex = indexCategories(categories);
-  const roots = childrenOf(catIndex, null).slice(1); // skip first root category
+  const [cats, setCats] = useState(categories);
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { setCats(categories); }, [categories]);
+
+  const catIndex = useMemo(() => indexCategories(cats), [cats]);
+  const roots = childrenOf(catIndex, null).slice(1);
   const [sel1, setSel1] = useState(null);
   const [sel2, setSel2] = useState(null);
-  const [uploading, setUploading] = useState(null);
-
   const subs = sel1 ? childrenOf(catIndex, sel1) : [];
   const thirds = sel2 ? childrenOf(catIndex, sel2) : [];
 
-  const uploadImage = async (catId, file) => {
-    setUploading(catId);
-    try {
-      const fd = new FormData(); fd.append("photo", file);
-      // use existing products photo endpoint pattern - but for categories we'll just update image_url
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        // For now, update the image_url via PATCH
-        await api.patch(`/categories/${catId}`, { image_url: "" });
-      };
-      reader.readAsDataURL(file);
-    } catch { /* ignore */ }
-    finally { setUploading(null); }
-  };
-
-  function CatRow({ cat, selected, onSelect }) {
-    return (
-      <button type="button" onClick={() => onSelect(cat.id)}
-        className={cn("w-full flex items-center gap-3 rounded-xl p-2.5 text-left cursor-pointer transition-colors",
-          selected ? "bg-primary/5 border border-primary/30" : "hover:bg-muted border border-transparent")}>
-        <div className="h-10 w-10 shrink-0 rounded-xl border border-border bg-muted flex items-center justify-center overflow-hidden">
-          {cat.image_url
-            ? <img src={cat.image_url} alt="" className="h-full w-full object-cover" />
-            : <span className="text-xs text-muted-foreground">📁</span>}
-        </div>
-        <span className="truncate text-sm font-semibold text-foreground">{catName(cat)}</span>
-      </button>
-    );
-  }
-
-  function ColPane({ title, cats, selected, onSelect }) {
-    return (
-      <div className="flex flex-col rounded-2xl border border-border overflow-hidden">
-        <div className="border-b border-border bg-muted/50 px-4 py-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
-          {title}
-        </div>
-        <div className="flex-1 overflow-y-auto p-2 min-h-64 max-h-80 space-y-1">
-          {cats.length === 0
-            ? <div className="flex h-full items-center justify-center text-xs text-muted-foreground">👈 Oldingi darajadan kategoriya tanlang</div>
-            : cats.map((c) => <CatRow key={c.id} cat={c} selected={selected === c.id} onSelect={onSelect} />)}
-        </div>
-      </div>
-    );
-  }
+  const onUploaded = (id, url) =>
+    setCats((list) => list.map((c) => (c.id === id ? { ...c, image_url: url } : c)));
 
   return (
     <div className="space-y-4">
       <p className="text-xs text-muted-foreground">{t("settings_cat_images_hint")}</p>
-      <div className="grid grid-cols-3 gap-3">
-        <ColPane title="Asosiy daraja" cats={roots} selected={sel1} onSelect={(id) => { setSel1(id); setSel2(null); }} />
-        <ColPane title="Daraja 2" cats={subs} selected={sel2} onSelect={(id) => { setSel2(id); }} />
-        <ColPane title="Daraja 3" cats={thirds} selected={null} onSelect={() => {}} />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <CatColPane title="Asosiy daraja" items={roots} selected={sel1} onUploaded={onUploaded} onSelect={(id) => { setSel1(id); setSel2(null); }} />
+        <CatColPane title="Daraja 2" items={subs} selected={sel2} onUploaded={onUploaded} onSelect={(id) => setSel2(id)} />
+        <CatColPane title="Daraja 3" items={thirds} selected={null} onUploaded={onUploaded} onSelect={() => {}} />
       </div>
-      <p className="text-xs text-muted-foreground">
-        <span className="text-primary font-semibold cursor-pointer">Kategoriyani tanlang</span> va ro'yxatning o'zida rasmni tanlang.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("settings_cat_upload_hint")}</p>
     </div>
   );
 }
@@ -587,11 +610,17 @@ function TelegramTab({ f, setF, onSave, saving }) {
   const [verifyResult, setVerifyResult] = useState(null);
 
   const verify = async () => {
-    if (!f._bot_token_input) return;
+    const token = f._bot_token_input || f.telegram_bot_token;
+    if (!token) return;
     setVerifying(true);
     try {
-      const r = await api.post("/auth/telegram/verify", { token: f._bot_token_input });
-      setVerifyResult({ ok: true, name: r.data?.name, username: r.data?.username });
+      const r = await api.post("/auth/telegram/verify", { token });
+      if (r.data?.ok) {
+        setVerifyResult({ ok: true, name: r.data.name, username: r.data.username });
+        setF((s) => ({ ...s, telegram_bot_name: r.data.name, telegram_bot_username: r.data.username }));
+      } else {
+        setVerifyResult({ ok: false });
+      }
     } catch {
       setVerifyResult({ ok: false });
     } finally { setVerifying(false); }
@@ -609,7 +638,11 @@ function TelegramTab({ f, setF, onSave, saving }) {
           <div className="relative">
             <Input type={tokenVisible ? "text" : "password"} value={f._bot_token_input || ""}
               onChange={(e) => setF((s) => ({ ...s, _bot_token_input: e.target.value, telegram_bot_token: e.target.value }))}
-              placeholder="123456:ABC..." />
+              placeholder="123456:ABC..." className="pr-10" />
+            <button type="button" onClick={() => setTokenVisible((v) => !v)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-muted-foreground hover:text-foreground cursor-pointer">
+              {tokenVisible ? "🙈" : "👁"}
+            </button>
           </div>
         </div>
         <div>
@@ -1019,7 +1052,8 @@ export default function SettingsPage() {
   const save = async () => {
     setSaving(true);
     try {
-      const { _bot_token_input, ...payload } = f;
+      // eslint-disable-next-line no-unused-vars
+      const { _bot_token_input, telegram_bot_name, telegram_bot_username, ...payload } = f;
       const r = await api.patch("/stores/me", payload);
       setF((s) => ({ ...r.data, _bot_token_input: s._bot_token_input }));
       setToast(t("saved"));

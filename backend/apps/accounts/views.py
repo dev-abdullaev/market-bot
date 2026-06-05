@@ -1,3 +1,7 @@
+import json
+import urllib.error
+import urllib.request
+
 from django.conf import settings
 from django.contrib.auth import authenticate
 from rest_framework import status
@@ -47,3 +51,36 @@ class MeView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class TelegramVerifyView(APIView):
+    """Verify a Telegram bot token by calling the Telegram getMe API.
+
+    POST body: ``{"token": "<bot token>"}``
+
+    Always returns HTTP 200 so the frontend can read the JSON body:
+    - ``{"ok": true, "name": "<first_name>", "username": "<username>"}``
+    - ``{"ok": false}``
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        token = request.data.get("token", "").strip()
+        if not token:
+            return Response({"ok": False})
+        url = f"https://api.telegram.org/bot{token}/getMe"
+        try:
+            req = urllib.request.Request(url)
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                data = json.loads(resp.read().decode())
+        except Exception:
+            return Response({"ok": False})
+        if not data.get("ok"):
+            return Response({"ok": False})
+        result = data.get("result", {})
+        return Response({
+            "ok": True,
+            "name": result.get("first_name", ""),
+            "username": result.get("username", ""),
+        })

@@ -3,7 +3,7 @@ import { ProductCard } from "./ProductCard";
 import { gridContainer } from "../../lib/motion";
 import { localName } from "../../lib/format";
 
-export function CategorySection({ category, currency, onAdd }) {
+export function CategorySection({ category, currency, onAdd, cardMode }) {
   const products = category.products ?? [];
   if (products.length === 0) return null;
 
@@ -30,6 +30,7 @@ export function CategorySection({ category, currency, onAdd }) {
             product={p}
             currency={currency}
             onAdd={onAdd}
+            cardMode={cardMode}
           />
         ))}
       </motion.div>

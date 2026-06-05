@@ -56,6 +56,7 @@ class Product(models.Model):
     height_cm = models.DecimalField(max_digits=8, decimal_places=2, default=0)
     seasonality = models.CharField(max_length=24, default="all_season")
     images = models.JSONField(default=list, blank=True)
+    stock_quantity = models.IntegerField(default=0)
 
     class Meta:
         ordering = ["sort_order", "id"]

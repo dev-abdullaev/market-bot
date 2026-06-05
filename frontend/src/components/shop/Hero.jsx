@@ -3,6 +3,7 @@ import { MapPin, Phone, Sparkles } from "lucide-react";
 
 export function Hero({ store }) {
   const reduce = useReducedMotion();
+  const banners = store?.showcase_config?.banner_images || [];
 
   return (
     <section className="relative overflow-hidden rounded-b-[28px] bg-gradient-to-br from-primary via-primary to-secondary text-white">
@@ -24,14 +25,26 @@ export function Hero({ store }) {
           Onlayn do'kon
         </motion.span>
 
-        <motion.h1
-          initial={reduce ? false : { opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.45, delay: 0.05 }}
-          className="mt-4 max-w-2xl text-balance font-display text-3xl font-800 leading-[1.1] sm:text-5xl"
-        >
-          {store?.name || "Bizning do'kon"}
-        </motion.h1>
+        <div className="mt-4 flex items-center gap-4">
+          {store?.logo_url ? (
+            <motion.img
+              src={store.logo_url}
+              alt=""
+              initial={reduce ? false : { opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="h-16 w-16 shrink-0 rounded-2xl bg-white/90 object-contain p-1.5 shadow-lift sm:h-20 sm:w-20"
+            />
+          ) : null}
+          <motion.h1
+            initial={reduce ? false : { opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.05 }}
+            className="max-w-2xl text-balance font-display text-3xl font-800 leading-[1.1] sm:text-5xl"
+          >
+            {store?.name || "Bizning do'kon"}
+          </motion.h1>
+        </div>
 
         <motion.p
           initial={reduce ? false : { opacity: 0, y: 16 }}
@@ -63,6 +76,23 @@ export function Hero({ store }) {
               </span>
             )}
           </motion.div>
+        )}
+
+        {banners.length > 0 && (
+          <div className="mt-6 flex gap-3 overflow-x-auto pb-1 -mx-1 px-1 snap-x">
+            {banners.map((b, i) => (
+              <motion.img
+                key={i}
+                src={b}
+                alt=""
+                initial={reduce ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 + i * 0.06 }}
+                onError={(e) => (e.currentTarget.style.display = "none")}
+                className="h-32 w-[80%] shrink-0 snap-center rounded-2xl object-cover shadow-lift sm:h-40 sm:w-[55%]"
+              />
+            ))}
+          </div>
         )}
       </div>
     </section>

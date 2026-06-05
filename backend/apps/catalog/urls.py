@@ -9,6 +9,7 @@ from .views import (
     ProductViewSet,
     ShopCatalogView,
     ShopView,
+    UploadView,
 )
 
 router = SimpleRouter(trailing_slash=False)
@@ -17,6 +18,8 @@ router.register("products", ProductViewSet, basename="product")
 router.register("packagings", PackagingViewSet, basename="packaging")
 
 urlpatterns = [
+    # Generic file upload
+    path("upload", UploadView.as_view()),
     # Global catalog — explicit paths BEFORE router so they win over any prefix clash
     path("global-products/add-to-store", GlobalProductAddView.as_view()),
     path("global-products", GlobalProductListView.as_view()),

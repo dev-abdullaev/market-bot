@@ -44,6 +44,7 @@ const EMPTY = {
   description_uz: "",
   category: "",
   sort_order: 0,
+  stock_quantity: 0,
   price: "",
   has_discount: false,
   discount_price: "",
@@ -366,6 +367,7 @@ export function ProductModal({
         description_uz: f.description_uz,
         category: f.category || null,
         sort_order: toInt(f.sort_order),
+        stock_quantity: toInt(f.stock_quantity),
         price: f.price === "" ? 0 : f.price,
         has_discount: Boolean(f.has_discount),
         discount_price:
@@ -531,6 +533,18 @@ export function ProductModal({
                   type="number"
                   value={f.sort_order}
                   onChange={set("sort_order")}
+                />
+              </FieldRow>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <FieldRow label={t("settings_stock_quantity")} htmlFor="pm-stock">
+                <Input
+                  id="pm-stock"
+                  type="number"
+                  min="0"
+                  value={f.stock_quantity}
+                  onChange={set("stock_quantity")}
                 />
               </FieldRow>
             </div>
