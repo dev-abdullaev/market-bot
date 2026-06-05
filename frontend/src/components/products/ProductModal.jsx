@@ -288,7 +288,7 @@ export function ProductModal({
   const [packagings, setPackagings] = useState([]);
 
   const catOptions = useMemo(
-    () => flattenCategories(indexCategories(categories || [])),
+    () => flattenCategories(indexCategories(categories || []), { hideFirstRoot: true }),
     [categories]
   );
 

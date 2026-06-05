@@ -56,10 +56,31 @@ export function childrenOf(index, parentId) {
 }
 
 /**
+ * Roots for category PICKERS: the first root is a structural store container
+ * (e.g. "Mağoza") that should never be a selectable category, so it is hidden
+ * and its direct children are promoted to the top level. Any additional roots
+ * are kept as-is. Used wherever a user assigns/filters by a real category.
+ */
+export function visibleRoots(index) {
+  const roots = childrenOf(index, null);
+  if (roots.length === 0) return [];
+  const [first, ...rest] = roots;
+  const promoted = childrenOf(index, first.id);
+  if (rest.length === 0) return promoted; // single container root → its children
+  const sortFn = (a, b) =>
+    (a.sort_order ?? 0) - (b.sort_order ?? 0) || catName(a).localeCompare(catName(b));
+  return [...promoted, ...rest].sort(sortFn);
+}
+
+/**
  * Flatten the category tree into options with an indentation depth so a plain
  * <select> can still convey hierarchy (e.g. "— Sub" / "—— Third").
+ *
+ * `hideFirstRoot` (opt-in, default false → backwards-compatible): start the walk
+ * from {@link visibleRoots} so the structural first root is omitted and its
+ * children appear at the top level. Display/management callers omit the flag.
  */
-export function flattenCategories(index) {
+export function flattenCategories(index, { hideFirstRoot = false } = {}) {
   const out = [];
   const walk = (parentId, depth) => {
     for (const c of childrenOf(index, parentId)) {
@@ -67,7 +88,14 @@ export function flattenCategories(index) {
       walk(c.id, depth + 1);
     }
   };
-  walk(null, 0);
+  if (hideFirstRoot) {
+    for (const r of visibleRoots(index)) {
+      out.push({ id: r.id, name: catName(r), depth: 0 });
+      walk(r.id, 1);
+    }
+  } else {
+    walk(null, 0);
+  }
   return out;
 }
 

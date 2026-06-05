@@ -79,7 +79,7 @@ function CategoryDropdown({ catIndex, value, onChange }) {
   const [q, setQ] = useState("");
   const ref = useRef(null);
 
-  const flat = useMemo(() => flattenCategories(catIndex), [catIndex]);
+  const flat = useMemo(() => flattenCategories(catIndex, { hideFirstRoot: true }), [catIndex]);
   const filtered = useMemo(() => {
     if (!q.trim()) return flat;
     const lo = q.toLowerCase();

@@ -9,7 +9,7 @@ import api from "../../lib/api";
 import { t } from "../../lib/i18n";
 import { cn } from "../../lib/cn";
 import { asList } from "../../lib/panel";
-import { catName, indexCategories, childrenOf } from "../../lib/products";
+import { catName, indexCategories, childrenOf, visibleRoots } from "../../lib/products";
 import { Button } from "../../components/ui/Button";
 import { Input, Label, Select } from "../../components/ui/Input";
 import { Spinner } from "../../components/ui/Spinner";
@@ -581,7 +581,7 @@ function KategoriyaRasmlariTab({ categories }) {
   useEffect(() => { setCats(categories); }, [categories]);
 
   const catIndex = useMemo(() => indexCategories(cats), [cats]);
-  const roots = childrenOf(catIndex, null).slice(1);
+  const roots = visibleRoots(catIndex);
   const [sel1, setSel1] = useState(null);
   const [sel2, setSel2] = useState(null);
   const subs = sel1 ? childrenOf(catIndex, sel1) : [];
