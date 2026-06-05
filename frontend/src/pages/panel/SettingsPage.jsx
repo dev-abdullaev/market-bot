@@ -487,7 +487,7 @@ function BannerlarTab({ f, setF, onSave, saving }) {
 /* ── 5. Kategoriya rasmlari ──────────────────────────────────── */
 function KategoriyaRasmlariTab({ categories }) {
   const catIndex = indexCategories(categories);
-  const roots = childrenOf(catIndex, null);
+  const roots = childrenOf(catIndex, null).slice(1); // skip first root category
   const [sel1, setSel1] = useState(null);
   const [sel2, setSel2] = useState(null);
   const [uploading, setUploading] = useState(null);
