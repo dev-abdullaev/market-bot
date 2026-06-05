@@ -117,7 +117,7 @@ function PayBadge({ type }) {
       <img
         src={candidates[idx]}
         alt=""
-        className="h-8 w-auto max-w-[120px] object-contain"
+        className="h-11 w-auto max-w-[150px] object-contain"
         onError={() => setIdx((i) => i + 1)}
       />
     );
