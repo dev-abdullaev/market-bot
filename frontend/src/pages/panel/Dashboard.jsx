@@ -98,27 +98,27 @@ const PAYMENT_ICONS = {
   cash: { icon: Banknote, cls: "bg-emerald-100 text-emerald-600" },
 };
 
-// Optional real logo files. Drop official assets here and they take over
-// automatically: frontend/public/payment-logos/{payme,click,uzum,xazna}.svg
-// (.svg or .png). Until present, the inline brand marks below are shown.
-const PAYMENT_LOGO_FILES = {
-  payme: "/payment-logos/payme.svg",
-  click: "/payment-logos/click.svg",
-  uzum: "/payment-logos/uzum.svg",
-  xazna: "/payment-logos/xazna.svg",
+// Optional real logo files. Drop official assets into
+// frontend/public/payment-logos/ as {payme,click,uzum,xazna}.png (or .svg)
+// and they take over automatically. Until present, the inline brand marks show.
+const PAYMENT_LOGO_CANDIDATES = {
+  payme: ["/payment-logos/payme.png", "/payment-logos/payme.svg"],
+  click: ["/payment-logos/click.png", "/payment-logos/click.svg"],
+  uzum: ["/payment-logos/uzum.png", "/payment-logos/uzum.svg"],
+  xazna: ["/payment-logos/xazna.png", "/payment-logos/xazna.svg"],
 };
 
-/** Real logo file → inline brand SVG → tinted lucide icon (graceful fallback). */
+/** Real logo file (png→svg) → inline brand SVG → tinted lucide icon. */
 function PayBadge({ type }) {
-  const [broken, setBroken] = useState(false);
-  const file = PAYMENT_LOGO_FILES[type];
-  if (file && !broken) {
+  const [idx, setIdx] = useState(0);
+  const candidates = PAYMENT_LOGO_CANDIDATES[type];
+  if (candidates && idx < candidates.length) {
     return (
       <img
-        src={file}
+        src={candidates[idx]}
         alt=""
-        className="h-6 w-auto max-w-[110px] object-contain"
-        onError={() => setBroken(true)}
+        className="h-8 w-auto max-w-[120px] object-contain"
+        onError={() => setIdx((i) => i + 1)}
       />
     );
   }
