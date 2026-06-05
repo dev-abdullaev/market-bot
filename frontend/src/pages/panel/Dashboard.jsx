@@ -25,8 +25,11 @@ import { MapContainer, Marker, TileLayer, useMap } from "react-leaflet";
 import L from "leaflet";
 import {
   AlertTriangle,
+  Banknote,
   BarChart3,
+  Building2,
   Clock,
+  CreditCard,
   Eye,
   LayoutDashboard,
   MapPin,
@@ -34,10 +37,13 @@ import {
   Package2,
   PieChart as PieIcon,
   Receipt,
+  ShoppingBag,
+  Smartphone,
   Star,
   TrendingUp,
   Users,
   Wallet,
+  Zap,
 } from "lucide-react";
 import api from "../../lib/api";
 import { t } from "../../lib/i18n";
@@ -57,6 +63,28 @@ const PIE_COLORS = [
   "#F59E0B",
   "#EC4899",
 ];
+
+// Per-payment-type icon + brand-ish tint. Keys match backend payment_method.
+const PAYMENT_ICONS = {
+  payme: { icon: Smartphone, cls: "bg-cyan-100 text-cyan-600" },
+  click: { icon: Zap, cls: "bg-sky-100 text-sky-600" },
+  uzum: { icon: ShoppingBag, cls: "bg-violet-100 text-violet-600" },
+  xazna: { icon: Wallet, cls: "bg-amber-100 text-amber-600" },
+  bank: { icon: Building2, cls: "bg-slate-100 text-slate-600" },
+  card: { icon: CreditCard, cls: "bg-indigo-100 text-indigo-600" },
+  cash: { icon: Banknote, cls: "bg-emerald-100 text-emerald-600" },
+};
+
+/** Small rounded icon badge for a payment type. */
+function PayBadge({ type }) {
+  const conf = PAYMENT_ICONS[type] || { icon: Wallet, cls: "bg-muted text-muted-foreground" };
+  const Icon = conf.icon;
+  return (
+    <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-lg", conf.cls)}>
+      <Icon className="h-4 w-4" strokeWidth={2.2} />
+    </span>
+  );
+}
 
 const todayISO = () => new Date().toISOString().slice(0, 10);
 const num = (v) => (Number.isFinite(Number(v)) ? Number(v) : 0);
@@ -604,7 +632,12 @@ export default function Dashboard() {
                     {payments.map((p, i) => (
                       <tr key={p.type || i} className="border-b border-border/70">
                         <td className="py-2 pr-2 text-muted-foreground">{i + 1}</td>
-                        <td className="py-2 pr-2 font-semibold text-foreground">{p.label}</td>
+                        <td className="py-2 pr-2">
+                          <span className="flex items-center gap-2.5 font-semibold text-foreground">
+                            <PayBadge type={p.type} />
+                            {p.label}
+                          </span>
+                        </td>
                         <td className="py-2 pr-2 text-right text-muted-foreground">{p.count}</td>
                         <td className="py-2 pr-2 text-right text-muted-foreground">{p.percent}%</td>
                         <td className="py-2 text-right font-bold text-foreground">{grouped(p.sum)}</td>
