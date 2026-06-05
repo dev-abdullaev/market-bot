@@ -37,13 +37,10 @@ import {
   Package2,
   PieChart as PieIcon,
   Receipt,
-  ShoppingBag,
-  Smartphone,
   Star,
   TrendingUp,
   Users,
   Wallet,
-  Zap,
 } from "lucide-react";
 import api from "../../lib/api";
 import { t } from "../../lib/i18n";
@@ -64,19 +61,46 @@ const PIE_COLORS = [
   "#EC4899",
 ];
 
-// Per-payment-type icon + brand-ish tint. Keys match backend payment_method.
+// Brand SVG logos for the Uzbek payment systems (self-contained, no external URLs).
+const PAYMENT_LOGOS = {
+  payme: (
+    <svg viewBox="0 0 28 28" className="h-7 w-7" aria-label="Payme">
+      <rect width="28" height="28" rx="7" fill="#15C0B0" />
+      <path d="M9.6 7.4h5.3c2.5 0 4.2 1.65 4.2 4.05 0 2.4-1.7 4.05-4.2 4.05h-2.7V20.6H9.6V7.4Zm2.6 2.35v3.4h2.45c1.05 0 1.78-.72 1.78-1.7s-.73-1.7-1.78-1.7H12.2Z" fill="#fff" />
+    </svg>
+  ),
+  click: (
+    <svg viewBox="0 0 28 28" className="h-7 w-7" aria-label="Click">
+      <rect width="28" height="28" rx="7" fill="#0098D8" />
+      <path d="M10.5 7.6 20 12.1l-3.85 1.15 2.3 4.15-2 1.05-2.3-4.15-2.85 2.75V7.6Z" fill="#fff" />
+    </svg>
+  ),
+  uzum: (
+    <svg viewBox="0 0 28 28" className="h-7 w-7" aria-label="Uzum">
+      <rect width="28" height="28" rx="7" fill="#7000FF" />
+      <circle cx="10.8" cy="11.2" r="1.5" fill="#fff" />
+      <circle cx="17.2" cy="11.2" r="1.5" fill="#fff" />
+      <path d="M9 14.2a5 5 0 0 0 10 0" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" />
+    </svg>
+  ),
+  xazna: (
+    <svg viewBox="0 0 28 28" className="h-7 w-7" aria-label="Xazna">
+      <rect width="28" height="28" rx="7" fill="#FF6A00" />
+      <path d="M9.3 8.2 18.7 19.8M18.7 8.2 9.3 19.8" stroke="#fff" strokeWidth="2.7" strokeLinecap="round" />
+    </svg>
+  ),
+};
+
+// Fallback lucide icon + tint for the generic methods.
 const PAYMENT_ICONS = {
-  payme: { icon: Smartphone, cls: "bg-cyan-100 text-cyan-600" },
-  click: { icon: Zap, cls: "bg-sky-100 text-sky-600" },
-  uzum: { icon: ShoppingBag, cls: "bg-violet-100 text-violet-600" },
-  xazna: { icon: Wallet, cls: "bg-amber-100 text-amber-600" },
   bank: { icon: Building2, cls: "bg-slate-100 text-slate-600" },
   card: { icon: CreditCard, cls: "bg-indigo-100 text-indigo-600" },
   cash: { icon: Banknote, cls: "bg-emerald-100 text-emerald-600" },
 };
 
-/** Small rounded icon badge for a payment type. */
+/** Brand logo (Payme/Click/Uzum/Xazna) or tinted lucide icon (bank/card/cash). */
 function PayBadge({ type }) {
+  if (PAYMENT_LOGOS[type]) return PAYMENT_LOGOS[type];
   const conf = PAYMENT_ICONS[type] || { icon: Wallet, cls: "bg-muted text-muted-foreground" };
   const Icon = conf.icon;
   return (
