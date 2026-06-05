@@ -98,8 +98,30 @@ const PAYMENT_ICONS = {
   cash: { icon: Banknote, cls: "bg-emerald-100 text-emerald-600" },
 };
 
-/** Brand logo (Payme/Click/Uzum/Xazna) or tinted lucide icon (bank/card/cash). */
+// Optional real logo files. Drop official assets here and they take over
+// automatically: frontend/public/payment-logos/{payme,click,uzum,xazna}.svg
+// (.svg or .png). Until present, the inline brand marks below are shown.
+const PAYMENT_LOGO_FILES = {
+  payme: "/payment-logos/payme.svg",
+  click: "/payment-logos/click.svg",
+  uzum: "/payment-logos/uzum.svg",
+  xazna: "/payment-logos/xazna.svg",
+};
+
+/** Real logo file → inline brand SVG → tinted lucide icon (graceful fallback). */
 function PayBadge({ type }) {
+  const [broken, setBroken] = useState(false);
+  const file = PAYMENT_LOGO_FILES[type];
+  if (file && !broken) {
+    return (
+      <img
+        src={file}
+        alt=""
+        className="h-6 w-auto max-w-[110px] object-contain"
+        onError={() => setBroken(true)}
+      />
+    );
+  }
   if (PAYMENT_LOGOS[type]) return PAYMENT_LOGOS[type];
   const conf = PAYMENT_ICONS[type] || { icon: Wallet, cls: "bg-muted text-muted-foreground" };
   const Icon = conf.icon;
