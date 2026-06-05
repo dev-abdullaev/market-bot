@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Customer(models.Model):
@@ -70,3 +71,31 @@ class StoreCustomer(models.Model):
 
     class Meta:
         unique_together = [("store", "customer")]
+
+
+class ScheduledBroadcast(models.Model):
+    REPEAT_CHOICES = [("once", "once"), ("daily", "daily"), ("weekly", "weekly")]
+    STATUS_CHOICES = [
+        ("pending", "pending"),
+        ("sent", "sent"),
+        ("failed", "failed"),
+        ("cancelled", "cancelled"),
+    ]
+
+    store = models.ForeignKey(
+        "stores.Store", on_delete=models.CASCADE, related_name="scheduled_broadcasts"
+    )
+    text = models.TextField()
+    image_url = models.URLField(max_length=500, blank=True)
+    repeat = models.CharField(max_length=8, choices=REPEAT_CHOICES, default="once")
+    scheduled_at = models.DateTimeField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
+    sent_count = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["scheduled_at"]
+
+    def __str__(self):
+        return f"ScheduledBroadcast #{self.pk} ({self.status}) store={self.store_id}"

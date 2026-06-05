@@ -4,7 +4,7 @@ from rest_framework import serializers
 from apps.catalog.models import Product
 from apps.orders.models import Customer
 from apps.notifications.orders import notify_new_order
-from .models import Order, OrderItem, Segment
+from .models import Order, OrderItem, Segment, ScheduledBroadcast
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +13,16 @@ class SegmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Segment
         fields = ["id", "name", "sort_order"]
+
+
+class ScheduledBroadcastSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScheduledBroadcast
+        fields = [
+            "id", "text", "image_url", "repeat", "scheduled_at",
+            "status", "sent_count", "created_at", "sent_at",
+        ]
+        read_only_fields = ["status", "sent_count", "created_at", "sent_at"]
 
 
 class OrderItemInput(serializers.Serializer):

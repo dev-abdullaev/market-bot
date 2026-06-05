@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (OrderCreateView, OrderListView, OrderStatusView,
                     BotOrderStatusView, StatsView, ClientsView, BroadcastView,
+                    BroadcastQueueView, BroadcastHistoryView, BroadcastCancelView,
                     AnalyticsView, SegmentListCreateView, SegmentDestroyView,
                     CustomerSegmentUpdateView)
 
@@ -14,6 +15,9 @@ urlpatterns = [
     path("admin/customers", ClientsView.as_view()),
     path("admin/customers/<int:customer_id>/segment", CustomerSegmentUpdateView.as_view()),
     path("admin/broadcast", BroadcastView.as_view()),
+    path("admin/broadcast/queue", BroadcastQueueView.as_view()),
+    path("admin/broadcast/history", BroadcastHistoryView.as_view()),
+    path("admin/broadcast/queue/<int:pk>", BroadcastCancelView.as_view()),
     path("admin/segments", SegmentListCreateView.as_view()),
     path("admin/segments/<int:pk>", SegmentDestroyView.as_view()),
 ]

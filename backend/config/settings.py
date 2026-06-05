@@ -125,3 +125,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 BOT_SHARED_SECRET = os.getenv("BOT_SHARED_SECRET", "")
 FRONTEND_WEBAPP_URL = os.getenv("FRONTEND_WEBAPP_URL", "")
+
+# ---------------------------------------------------------------------------
+# Celery
+# ---------------------------------------------------------------------------
+CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+
+CELERY_BEAT_SCHEDULE = {
+    "process-scheduled-broadcasts": {
+        "task": "apps.orders.tasks.process_scheduled_broadcasts",
+        "schedule": 60.0,  # run every 60 seconds
+    },
+}

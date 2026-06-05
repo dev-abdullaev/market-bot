@@ -15,8 +15,9 @@ from apps.accounts.models import User
 from apps.catalog.permissions import IsOperatorWithStore
 from apps.notifications.telegram import send_message
 from apps.notifications.broadcast import broadcast_to_customers
-from .models import Order, OrderItem, Customer, Segment, StoreCustomer
-from .serializers import OrderCreateSerializer, OrderSerializer, SegmentSerializer
+from .models import Order, OrderItem, Customer, Segment, StoreCustomer, ScheduledBroadcast
+from .serializers import (OrderCreateSerializer, OrderSerializer, SegmentSerializer,
+                           ScheduledBroadcastSerializer)
 
 logger = logging.getLogger(__name__)
 
@@ -446,8 +447,76 @@ class BroadcastView(APIView):
         text = (request.data.get("text") or "").strip()
         if not text:
             return Response({"detail": "Text required"}, status=400)
+        image_url = (request.data.get("image_url") or "").strip()
+        scheduled_at_raw = (request.data.get("scheduled_at") or "").strip()
+        repeat = (request.data.get("repeat") or "once").strip()
+
+        if scheduled_at_raw:
+            # Parse ISO datetime; reject unknown values
+            from datetime import datetime as dt_cls
+            try:
+                # Accept timezone-aware or naive; force UTC-aware via fromisoformat
+                parsed = dt_cls.fromisoformat(scheduled_at_raw)
+            except ValueError:
+                return Response({"detail": "Invalid scheduled_at format, use ISO 8601"}, status=400)
+            # Make timezone-aware if naive
+            if timezone.is_naive(parsed):
+                parsed = timezone.make_aware(parsed)
+            if repeat not in ("once", "daily", "weekly"):
+                repeat = "once"
+            broadcast = ScheduledBroadcast.objects.create(
+                store=store,
+                text=text,
+                image_url=image_url,
+                repeat=repeat,
+                scheduled_at=parsed,
+                status="pending",
+            )
+            return Response({"scheduled": True, "id": broadcast.pk}, status=status.HTTP_201_CREATED)
+
+        # Immediate send — broadcast_to_customers only accepts (store, text)
         sent = broadcast_to_customers(store, text)
         return Response({"sent": sent})
+
+
+class BroadcastQueueView(APIView):
+    permission_classes = [IsOperatorWithStore]
+
+    def get(self, request):
+        store = request.user.store
+        if not store:
+            return Response({"detail": "No store"}, status=404)
+        qs = (ScheduledBroadcast.objects
+              .filter(store=store, status="pending")
+              .order_by("-scheduled_at"))
+        return Response(ScheduledBroadcastSerializer(qs, many=True).data)
+
+
+class BroadcastHistoryView(APIView):
+    permission_classes = [IsOperatorWithStore]
+
+    def get(self, request):
+        store = request.user.store
+        if not store:
+            return Response({"detail": "No store"}, status=404)
+        qs = (ScheduledBroadcast.objects
+              .filter(store=store)
+              .exclude(status="pending")
+              .order_by("-created_at")[:50])
+        return Response(ScheduledBroadcastSerializer(qs, many=True).data)
+
+
+class BroadcastCancelView(APIView):
+    permission_classes = [IsOperatorWithStore]
+
+    def delete(self, request, pk):
+        store = request.user.store
+        if not store:
+            return Response({"detail": "No store"}, status=404)
+        broadcast = get_object_or_404(ScheduledBroadcast, pk=pk, store=store, status="pending")
+        broadcast.status = "cancelled"
+        broadcast.save(update_fields=["status"])
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class SegmentListCreateView(APIView):
